@@ -453,7 +453,7 @@
         .entry-right {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             flex-shrink: 0;
         }
 
@@ -467,6 +467,8 @@
 
         .tag-pill.rh { background: var(--danger-bg); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.25); }
         .tag-pill.cnh { background: var(--brass-gold-dim); color: var(--brass-gold); border: 1px solid var(--brass-border); }
+        .tag-pill.fo-p { background: var(--success-bg); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.25); }
+        .tag-pill.fo-n { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.25); }
 
         .chevron-icon { color: var(--text-muted); width: 18px; height: 18px; }
 
@@ -611,38 +613,6 @@
             color: #fca5a5;
         }
 
-        /* --- ABA MATÉRIAS --- */
-        .subjects-stack { display: flex; flex-direction: column; gap: 10px; }
-        .subject-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-md);
-            padding: 1rem;
-        }
-        .subject-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
-        .subject-head h3 { font-size: 0.95rem; font-weight: 700; color: #fff; }
-        .subject-hours {
-            font-size: 0.7rem;
-            font-family: var(--font-mono);
-            color: var(--brass-gold);
-            background: var(--brass-gold-dim);
-            padding: 2px 6px;
-            border-radius: 4px;
-            border: 1px solid var(--brass-border);
-        }
-        .subject-desc { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.85rem; line-height: 1.4; }
-        .subject-actions { display: flex; gap: 8px; }
-        .sub-btn {
-            font-size: 0.72rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            padding: 6px 12px;
-            border-radius: 4px;
-            text-decoration: none;
-        }
-
         /* --- ABA AVISOS --- */
         .bulletin-stack { display: flex; flex-direction: column; gap: 10px; }
         .bulletin-card {
@@ -719,10 +689,6 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 Alunos & Comando
             </button>
-            <button class="nav-tab" onclick="navigate('materias')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                Matérias
-            </button>
             <button class="nav-tab" onclick="navigate('avisos')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                 Avisos
@@ -762,7 +728,7 @@
                 </div>
 
                 <div class="filter-pills">
-                    <button class="pill-btn active" onclick="applyFilter('todos', this)">Todos (49)</button>
+                    <button class="pill-btn active" onclick="applyFilter('todos', this)">Todos</button>
                     <button class="pill-btn" onclick="applyFilter('comando', this)">Xerifado</button>
                     <button class="pill-btn" onclick="applyFilter('rh_o', this)">Sangue O</button>
                     <button class="pill-btn" onclick="applyFilter('rh_a', this)">Sangue A</button>
@@ -774,62 +740,7 @@
             </div>
         </section>
 
-        <!-- ================= ABA 2: MATÉRIAS ================= -->
-        <section id="tab-materias" class="tab-content">
-            <div class="section-header">
-                <h2>Grade Curricular & Arquivos</h2>
-                <span>Módulos Ativos</span>
-            </div>
-
-            <div class="subjects-stack">
-                <div class="subject-card">
-                    <div class="subject-head">
-                        <h3>Armamento, Munição e Tiro Policial</h3>
-                        <span class="subject-hours">80h/aula</span>
-                    </div>
-                    <p class="subject-desc">Fundamentos do tiro defensivo, manuseio seguro de pistola, panes e tiro em ambiente de baixa luminosidade.</p>
-                    <div class="subject-actions">
-                        <a href="javascript:void(0)" class="sub-btn">Plano de Aula</a>
-                        <a href="javascript:void(0)" class="sub-btn">Apostila PDF</a>
-                    </div>
-                </div>
-
-                <div class="subject-card">
-                    <div class="subject-head">
-                        <h3>Investigação Policial & Inteligência</h3>
-                        <span class="subject-hours">60h/aula</span>
-                    </div>
-                    <p class="subject-desc">Metodologia investigativa, local de crime, cadeia de custódia, análise de vínculos e relatórios técnicos.</p>
-                    <div class="subject-actions">
-                        <a href="javascript:void(0)" class="sub-btn">Manual Técnico</a>
-                    </div>
-                </div>
-
-                <div class="subject-card">
-                    <div class="subject-head">
-                        <h3>Abordagem Policial e CQB</h3>
-                        <span class="subject-hours">50h/aula</span>
-                    </div>
-                    <p class="subject-desc">Progressão veicular, intervenção em recintos confinados e uso escalonado da força policial.</p>
-                    <div class="subject-actions">
-                        <a href="javascript:void(0)" class="sub-btn">Slides Teóricos</a>
-                    </div>
-                </div>
-
-                <div class="subject-card">
-                    <div class="subject-head">
-                        <h3>Atendimento Pré-Hospitalar Tático (APH)</h3>
-                        <span class="subject-hours">40h/aula</span>
-                    </div>
-                    <p class="subject-desc">Protocolo MARC 1 policial, torniquetes, curativos de combate e extração de feridos sob fogo.</p>
-                    <div class="subject-actions">
-                        <a href="javascript:void(0)" class="sub-btn">Protocolo MARC 1</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= ABA 3: AVISOS ================= -->
+        <!-- ================= ABA 2: AVISOS ================= -->
         <section id="tab-avisos" class="tab-content">
             <div class="section-header">
                 <h2>Quadro Oficial de Ordens</h2>
@@ -857,7 +768,7 @@
             </div>
         </section>
 
-        <!-- ================= ABA 4: COORDENAÇÃO ================= -->
+        <!-- ================= ABA 3: COORDENAÇÃO ================= -->
         <section id="tab-coord" class="tab-content">
             <div class="section-header">
                 <h2>Corpo Diretivo & Instrutores</h2>
@@ -922,6 +833,11 @@
                 </div>
 
                 <div class="info-cell">
+                    <div class="cell-title">FO+ / FO-</div>
+                    <div class="cell-data" id="d-fo">-</div>
+                </div>
+
+                <div class="info-cell">
                     <div class="cell-title">Data de Nascimento</div>
                     <div class="cell-data" id="d-nascimento">-</div>
                 </div>
@@ -978,44 +894,30 @@
     <!-- LÓGICA DE INTEGRAÇÃO COM A PLANILHA DO GOOGLE -->
     <script>
         // =========================================================================
-        // 1. COLE O LINK CSV DA SUA PLANILHA ENTRE AS ASPAS ABAIXO:
+        // COLE O LINK CSV DA SUA PLANILHA ENTRE AS ASPAS ABAIXO:
         // =========================================================================
         const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsv0cEgGn3J3ZK4y1hIaw1IOFenVmJa3FllWJ_Do2NcuXTgiLe5CM3EaO1uIlobg/pub?output=csv";
-
-        // =========================================================================
-        // 2. CONFIGURAÇÃO DA CADEIA DE COMANDO (XERIFADO)
-        // (Você pode definir aqui pelo Nome de Guerra de quem é o Xerife, Sub, S1, S2, S3)
-        // =========================================================================
-        const COMANDO_DESIGNADO = {
-            "ALBERTI": "XERIFE",
-            "ALLANA": "SUB-XERIFE",
-            "ANA CARNEIRO": "S1",
-            "CAMELO": "S2",
-            "CARVALHO": "S3"
-        };
 
         let alunos = [];
         let currentFilter = 'todos';
 
-        // DADOS REAIS EXTRAÍDOS DA SUA PLANILHA (Exibidos enquanto o link é carregado)
+        // Mapeamento automático dos códigos do Xerifado (Coluna S)
+        const MAPA_XERIFADO = {
+            "1": "XERIFE",
+            "2": "SUB-XERIFE",
+            "3": "S1",
+            "4": "S2",
+            "5": "S3"
+        };
+
+        // DADOS DE EXEMPLO (Caso execute sem link configurado)
         const alunosIniciais = [
-            { id: 1, num: "01", nomeGuerra: "ALBERTI", nomeCompleto: "RAYANE DA SILVA ALBERTI", rh: "A+", canga: "ROZANA AZEVEDO", cpf: "013.871.472-00", nascimento: "31/07/1997", cnh: "AB", rg: "CIN", vunesp: "21350396", telefone: "(95) 99129-4079", emergTel: "(95) 99170-0310", emergParentesco: "Nathamy (irmã)", endereco: "Rua Aquário, 1360 - Cidade Satélite" },
-            { id: 2, num: "02", nomeGuerra: "ALLANA", nomeCompleto: "ALLANA LEAL RODRIGUES DOS SANTOS", rh: "O+", canga: "MENDES", cpf: "025.725.562-19", nascimento: "31/01/1996", cnh: "AB", rg: "3700666", vunesp: "20033591", telefone: "(95) 99164-7019", emergTel: "95991685343", emergParentesco: "ESPOSO JOSUEL", endereco: "Rua Iugoslávia, 870, Cauamé" },
-            { id: 3, num: "03", nomeGuerra: "ANA CARNEIRO", nomeCompleto: "ANA FLAVIA DA COSTA CARNEIRO", rh: "A+", canga: "CLEOCIMARA", cpf: "036.208.972-80", nascimento: "12/10/1998", cnh: "AB", rg: "3323269", vunesp: "19271425", telefone: "(95) 99128-1726", emergTel: "(95) 991394114", emergParentesco: "PAI", endereco: "RUA MESTRE ALBANO, 4063, CAMBARÁ" },
-            { id: 4, num: "04", nomeGuerra: "CAMELO", nomeCompleto: "LUIS HENRIK CAMELO SOUSA", rh: "O-", canga: "Camelo", cpf: "986.088.602-44", nascimento: "15/11/1995", cnh: "AB", rg: "372173-6", vunesp: "21466009", telefone: "(95) 98116-5813", emergTel: "95 991628200", emergParentesco: "Mulher", endereco: "Rua bolônia , 805 , centenário" },
-            { id: 5, num: "05", nomeGuerra: "CARVALHO", nomeCompleto: "RAISY CARVALHO SILVA", rh: "O+", canga: "Claudivânia", cpf: "04799293273", nascimento: "20/05/1999", cnh: "AB", rg: "8187159", vunesp: "19416300", telefone: "(95) 98109-8903", emergTel: "95981228831", emergParentesco: "AMIGA", endereco: "RUA Z DOIS, 315- Dr Silvio Leite" },
-            { id: 6, num: "06", nomeGuerra: "CLAUDIVANIA", nomeCompleto: "CLAUDIVANIA MORAIS ROCHA", rh: "O+", canga: "Carvalho", cpf: "019.102.762-60", nascimento: "21/12/1993", cnh: "AB", rg: "364785-4", vunesp: "20496060", telefone: "(95) 99133-4173", emergTel: "95991197284", emergParentesco: "Namorada", endereco: "Rua escorpião, 217, satelite" },
-            { id: 7, num: "07", nomeGuerra: "CLEOCIMARA", nomeCompleto: "CLEOCIMARA DE OLIVEIRA MESSIAS", rh: "O+", canga: "ANA CARNEIRO", cpf: "745448532-49", nascimento: "04/02/1983", cnh: "AB", rg: "CIN", vunesp: "19479891", telefone: "(95) 99124-0650", emergTel: "95 98419-2788", emergParentesco: "ESPOSO", endereco: "Rua Izídio Galdino Filho, 716, Jardim Carana" },
-            { id: 8, num: "08", nomeGuerra: "DAMASCENO", nomeCompleto: "DIEGO CUNHA DAMASCENO", rh: "O-", canga: "DAMASCENO", cpf: "032.778.482-21", nascimento: "02/09/1996", cnh: "B", rg: "26686902", vunesp: "20745419", telefone: "(92) 98426-0099", emergTel: "(92) 99131-2451", emergParentesco: "(Conjugue) Mayara", endereco: "Rua alcemir de Souza mota, 74, Bairro 31 d março" },
-            { id: 9, num: "09", nomeGuerra: "DANGLARIS", nomeCompleto: "DANGLARIS FERREIRA ALVES", rh: "O+", canga: "Freire", cpf: "683.466.032-15", nascimento: "01/05/1980", cnh: "AB", rg: "16608410", vunesp: "19321317", telefone: "(92) 99982-0810", emergTel: "92991666921", emergParentesco: "Daniela( irmã)", endereco: "rua Belarminio Fernandes Magalhães, 302 Asa Branca" },
-            { id: 10, num: "10", nomeGuerra: "DIEGO RAFAEL", nomeCompleto: "DIEGO RAFAEL CORREIA DE OLIVEIRA", rh: "A+", canga: "S BRITO", cpf: "090.896.944-98", nascimento: "09/05/1991", cnh: "AD", rg: "7952514", vunesp: "19432810", telefone: "(95) 99125-7158", emergTel: "(95) 981118989", emergParentesco: "ESPOSA", endereco: "Boa Vista - RR" },
-            { id: 11, num: "11", nomeGuerra: "EMANUEL", nomeCompleto: "PAULO EMANUEL BEZERRA NOGUEIRA", rh: "O+", canga: "Luziane", cpf: "03650204274", nascimento: "07/01/1998", cnh: "AB", rg: "4102690", vunesp: "19365080", telefone: "(95) 99115-0832", emergTel: "(92)991998399", emergParentesco: "-", endereco: "Boa Vista - RR" },
-            { id: 12, num: "12", nomeGuerra: "FILIPPE FERREIRA", nomeCompleto: "FILIPPE DOS SANTOS FERREIRA", rh: "O+", canga: "RODRIGO LIMA", cpf: "947.093.272-20", nascimento: "28/02/1988", cnh: "AB", rg: "CIN", vunesp: "19281412", telefone: "(95) 98115-1715", emergTel: "9598100-8108", emergParentesco: "PAI", endereco: "Boa Vista - RR" }
+            { id: 1, num: "01", nomeGuerra: "ALBERTI", nomeCompleto: "RAYANE DA SILVA ALBERTI", rh: "A+", canga: "ROZANA AZEVEDO", foMais: "0", foMenos: "0", xerifeNum: "1", cpf: "013.871.472-00", nascimento: "31/07/1997", cnh: "AB", rg: "CIN", vunesp: "21350396", telefone: "(95) 99129-4079", emergTel: "(95) 99170-0310", emergParentesco: "Nathamy (irmã)", endereco: "Rua Aquário, 1360 - Cidade Satélite" },
+            { id: 2, num: "02", nomeGuerra: "ALLANA", nomeCompleto: "ALLANA LEAL RODRIGUES DOS SANTOS", rh: "O+", canga: "MENDES", foMais: "1", foMenos: "0", xerifeNum: "2", cpf: "025.725.562-19", nascimento: "31/01/1996", cnh: "AB", rg: "3700666", vunesp: "20033591", telefone: "(95) 99164-7019", emergTel: "95991685343", emergParentesco: "ESPOSO JOSUEL", endereco: "Rua Iugoslávia, 870, Cauamé" }
         ];
 
         // Processa os dados brutos da planilha
         function processRawData(rows) {
-            // 1. Encontra a linha de cabeçalho correta (ignora a linha laranja de título)
             let headerIdx = -1;
             for (let i = 0; i < Math.min(6, rows.length); i++) {
                 const lineStr = (rows[i] || []).join(' ').toUpperCase();
@@ -1040,25 +942,37 @@
                 const getVal = (keywords) => {
                     for (let kw of keywords) {
                         const colIdx = headers.findIndex(h => h.includes(kw));
-                        if (colIdx !== -1 && row[colIdx]) {
+                        if (colIdx !== -1 && row[colIdx] !== undefined) {
                             return row[colIdx].toString().trim();
                         }
                     }
                     return '';
                 };
 
+                // Pega valor por índice exato se colunas padrão (P=15, Q=16, R=17, S=18)
+                const getColByIndex = (index) => (row[index] !== undefined ? row[index].toString().trim() : '');
+
                 const rawNum = getVal(['nº', 'num', 'no']);
                 const num = rawNum ? rawNum.padStart(2, '0') : String(idx + 1).padStart(2, '0');
                 const guerra = (getVal(['nome de guerra', 'guerra']) || `ALUNO ${num}`).toUpperCase();
                 const completo = getVal(['nome completo', 'completo']) || guerra;
                 
-                // Verifica comando (ou por coluna na planilha ou pelo objeto COMANDO_DESIGNADO)
-                const comandoPlanilha = getVal(['comando', 'xerife', 'funcao']);
-                const comando = (comandoPlanilha || COMANDO_DESIGNADO[guerra] || '').toUpperCase();
-                const isComando = comando.length > 0 && comando !== 'NÃO' && comando !== 'NAO';
+                // Coluna P (Índice 15): Canga
+                const canga = getVal(['canga']) || getColByIndex(15) || '-';
+                
+                // Coluna Q (Índice 16): FO+
+                const foMais = getVal(['fo+', 'fomais', 'fo mais']) || getColByIndex(16) || '0';
+                
+                // Coluna R (Índice 17): FO-
+                const foMenos = getVal(['fo-', 'fomenos', 'fo menos']) || getColByIndex(17) || '0';
+                
+                // Coluna S (Índice 18): Xerifado (1, 2, 3, 4, 5)
+                const xerifeNum = getVal(['xerife', 'comando', 'funcao']) || getColByIndex(18) || '';
+                
+                const funcaoXerife = MAPA_XERIFADO[xerifeNum] || '';
+                const isComando = funcaoXerife !== '';
 
                 const rh = (getVal(['rh', 'sangue']) || 'O+').toUpperCase();
-                const canga = getVal(['canga']) || '-';
                 const cpf = getVal(['cpf']) || '-';
                 const nascimento = getVal(['nasciment', 'nasc']) || '-';
                 const cnh = (getVal(['tipo de cnh', 'cnh']) || 'AB').toUpperCase();
@@ -1075,10 +989,13 @@
                     nomeGuerra: guerra,
                     nomeCompleto: completo,
                     isComando,
-                    badgeComando: isComando ? comando : '',
-                    funcao: isComando ? comando : 'Aluno do Pelotão',
+                    badgeComando: funcaoXerife,
+                    funcao: isComando ? funcaoXerife : 'Aluno do Pelotão',
                     rh,
                     canga,
+                    foMais,
+                    foMenos,
+                    xerifeNum,
                     cpf,
                     nascimento,
                     cnh,
@@ -1106,12 +1023,12 @@
                 syncDot.className = "sync-dot";
                 syncText.innerText = "Demonstração (Cole o link da sua planilha no código)";
                 alunos = alunosIniciais.map(a => {
-                    const comando = COMANDO_DESIGNADO[a.nomeGuerra] || '';
+                    const funcao = MAPA_XERIFADO[a.xerifeNum] || '';
                     return {
                         ...a,
-                        isComando: comando.length > 0,
-                        badgeComando: comando,
-                        funcao: comando || 'Aluno do Pelotão'
+                        isComando: funcao !== '',
+                        badgeComando: funcao,
+                        funcao: funcao || 'Aluno do Pelotão'
                     };
                 });
                 renderCommand();
@@ -1120,7 +1037,6 @@
             }
 
             try {
-                // Adiciona timestamp para desativar cache do navegador
                 const timestampUrl = GOOGLE_SHEET_CSV_URL + (GOOGLE_SHEET_CSV_URL.includes('?') ? '&' : '?') + '_t=' + Date.now();
                 const res = await fetch(timestampUrl);
                 if (!res.ok) throw new Error("Erro de conexão");
@@ -1154,7 +1070,10 @@
         // ================= RENDERIZAR XERIFADO (COMANDO) =================
         function renderCommand() {
             const container = document.getElementById('command-strip');
-            const comando = alunos.filter(a => a.isComando);
+            // Filtra e ordena pelos números de xerife (1 até 5)
+            const comando = alunos
+                .filter(a => a.isComando)
+                .sort((a, b) => parseInt(a.xerifeNum) - parseInt(b.xerifeNum));
             
             if (comando.length === 0) {
                 container.style.display = 'none';
@@ -1198,6 +1117,8 @@
                         </div>
                     </div>
                     <div class="entry-right">
+                        ${a.foMais && a.foMais !== '0' ? `<span class="tag-pill fo-p" title="FO+">+'${a.foMais}</span>` : ''}
+                        ${a.foMenos && a.foMenos !== '0' ? `<span class="tag-pill fo-n" title="FO-">-${a.foMenos}</span>` : ''}
                         <span class="tag-pill rh">${a.rh}</span>
                         <span class="tag-pill cnh">${a.cnh}</span>
                         <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg>
@@ -1269,18 +1190,17 @@
 
             document.getElementById('d-rh').innerText = a.rh;
             document.getElementById('d-cnh').innerText = `Categoria ${a.cnh}`;
+            document.getElementById('d-fo').innerText = `+${a.foMais || 0} / -${a.foMenos || 0}`;
             document.getElementById('d-nascimento').innerText = a.nascimento;
             document.getElementById('d-cpf').innerText = a.cpf;
             document.getElementById('d-rg').innerText = a.rg;
             document.getElementById('d-vunesp').innerText = a.vunesp;
             document.getElementById('d-telefone').innerText = a.telefone;
             
-            // Emergência com parentesco
             const emergText = a.emergParentesco ? `${a.emergTel} (${a.emergParentesco})` : a.emergTel;
             document.getElementById('d-emergencia').innerText = emergText;
             document.getElementById('d-endereco').innerText = a.endereco;
 
-            // Links para discagem direta
             const cleanTel = a.telefone.replace(/\D/g, '');
             document.getElementById('call-student-btn').href = cleanTel ? `tel:${cleanTel}` : '#';
 

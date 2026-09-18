@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Aluno - CFP PCRR</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --gold-bright: #F3DFA2;
+            --gold-muted: rgba(212, 175, 55, 0.35);
+            --gold-glow: rgba(212, 175, 55, 0.2);
+            --navy-black: #05070a;
+            --tactical-blue: #0b1325;
+            --card-bg: rgba(11, 19, 37, 0.7);
+            --card-border: rgba(212, 175, 55, 0.25);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --red-alert: #ef4444;
+            --green-active: #10b981;
+            --badge-bg: rgba(212, 175, 55, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--navy-black);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Fundo Tático */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 24px 24px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 15%, rgba(10, 25, 47, 0.8) 0%, var(--navy-black) 75%);
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* HEADER */
+        header {
+            border-bottom: 1px solid var(--gold-muted);
+            background: rgba(5, 7, 10, 0.85);
+            backdrop-filter: blur(15px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 15px var(--gold-glow);
+            font-size: 1.2rem;
+        }
+
+        .brand-text h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .brand-text p {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* NAVEGAÇÃO */
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-tab {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab:hover {
+            color: var(--gold-bright);
+        }
+
+        .nav-tab.active {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--gold);
+            border: 1px solid var(--gold-muted);
+            box-shadow: 0 0 10px var(--gold-glow);
+        }
+
+        /* CONTAINER PRINCIPAL */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        .tab-view {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .tab-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* SEÇÃO DE TÍTULO */
+        .section-title-wrap {
+            margin-bottom: 1.8rem;
+            text-align: left;
+            border-left: 3px solid var(--gold);
+            padding-left: 12px;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .section-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* DESTAQUE DO COMANDO (XERIFE, SUB, S1, S2, S3) */
+        .command-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .command-card {
+            background: linear-gradient(145deg, rgba(16, 29, 56, 0.6), rgba(5, 7, 10, 0.8));
+            border: 1px solid var(--gold-muted);
+            border-radius: 10px;
+            padding: 1.25rem 1rem;
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .command-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--gold);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+        }
+
+        .command-role {
+            display: inline-block;
+            font-family: 'Cinzel', serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--gold);
+            background: var(--badge-bg);
+            border: 1px solid var(--gold-muted);
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 0.8rem;
+        }
+
+        .command-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid var(--gold);
+            margin: 0 auto 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: var(--gold);
+            font-size: 1.3rem;
+            box-shadow: 0 0 12px var(--gold-glow);
+        }
+
+        .command-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .command-sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* BUSCA DE ALUNOS */
+        .search-bar-wrap {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.07);
+            box-shadow: 0 0 12px var(--gold-glow);
+        }
+
+        .count-badge {
+            display: flex;
+            align-items: center;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--gold-muted);
+            color: var(--gold);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0 1rem;
+            border-radius: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* LISTA / GRID DE ALUNOS */
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1rem;
+        }
+
+        .student-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .student-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--gold-muted);
+            background: rgba(16, 29, 56, 0.85);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        }
+
+        .student-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--gold-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: var(--gold);
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .student-info {
+            flex: 1;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        .student-name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .student-canga {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .student-meta {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+            align-items: center;
+        }
+
+        .mini-pill {
+            font-size: 0.62rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .pill-rh { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .pill-cnh { background: rgba(59, 130, 246, 0.15); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .pill-faltas { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .pill-faltas.has-faltas { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        /* MODAL DE PERFIL / DOSSIÊ */
+        .modal-backdrop {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-dossier {
+            width: 100%;
+            max-width: 580px;
+            background: linear-gradient(160deg, #0d172e, #05070a);
+            border: 1px solid var(--gold);
+            border-radius: 14px;
+            box-shadow: 0 0 35px rgba(212, 175, 55, 0.25);
+            overflow: hidden;
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px) scale(0.96); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            background: rgba(212, 175, 55, 0.08);
+            border-bottom: 1px solid var(--gold-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .modal-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .modal-close-btn:hover { color: #fff; }
+
+        .modal-body {
+            padding: 1.5rem;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
+        .dossier-hero {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .dossier-photo {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.15);
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--gold);
+            box-shadow: 0 0 15px var(--gold-glow);
+            flex-shrink: 0;
+        }
+
+        .dossier-titles h2 {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .dossier-role-tag {
+            font-size: 0.72rem;
+            color: var(--gold-bright);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .dossier-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .dossier-field {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            padding: 0.75rem 0.9rem;
+            text-align: left;
+        }
+
+        .dossier-field.full {
+            grid-column: span 2;
+        }
+
+        .field-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--gold);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .field-val {
+            font-size: 0.85rem;
+            color: #fff;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .alert-rh {
+            color: #f87171;
+            font-weight: 700;
+        }
+
+        /* --- ABA MATÉRIAS --- */
+        .materias-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .materia-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: left;
+            transition: all 0.3s;
+        }
+
+        .materia-card:hover {
+            border-color: var(--gold-muted);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .materia-code {
+            font-size: 0.7rem;
+            color: var(--gold);
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .materia-name {
+            font-size: 1.05rem;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .materia-info {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+            line-height: 1.4;
+        }
+
+        .materia-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .materia-btn {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--gold-muted);
+            color: var(--gold);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .materia-btn:hover {
+            background: var(--gold);
+            color: var(--navy-black);
+        }
+
+        /* --- ABA AVISOS --- */
+        .notices-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .notice-card {
+            background: var(--card-bg);
+            border-left: 4px solid var(--gold);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1.2rem 1.4rem;
+            text-align: left;
+        }
+
+        .notice-card.urgent {
+            border-left-color: var(--red-alert);
+        }
+
+        .notice-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .notice-tag {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .notice-tag.general { background: rgba(212, 175, 55, 0.15); color: var(--gold); }
+        .notice-tag.priority { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+        .notice-date { font-size: 0.7rem; color: var(--text-muted); }
+        .notice-title { font-size: 1.05rem; color: #fff; font-weight: 700; margin-bottom: 6px; }
+        .notice-body { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+
+        /* --- ABA COORDENAÇÃO --- */
+        .coord-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .coord-card {
+            background: var(--card-bg);
+            border: 1px solid var(--gold-muted);
+            border-radius: 12px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+        }
+
+        .coord-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.12);
+            border: 2px solid var(--gold);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: var(--gold);
+        }
+
+        .coord-name { font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .coord-role { font-size: 0.75rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; font-weight: 600; }
+        .coord-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 600px) {
+            .nav-tabs { width: 100%; overflow-x: auto; justify-content: flex-start; }
+            .dossier-grid { grid-template-columns: 1fr; }
+            .dossier-field.full { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABEÇALHO -->
+    <header>
+        <div class="header-content">
+            <div class="brand">
+                <div class="brand-icon">⚡</div>
+                <div class="brand-text">
+                    <h1>CFP PCRR 2026</h1>
+                    <p>Corpo de Alunos • Doutrina & Operações</p>
+                </div>
+            </div>
+
+            <!-- NAVEGAÇÃO -->
+            <nav class="nav-tabs">
+                <button class="nav-tab active" onclick="switchTab('alunos')">Alunos & Comando</button>
+                <button class="nav-tab" onclick="switchTab('materias')">Matérias</button>
+                <button class="nav-tab" onclick="switchTab('avisos')">Avisos</button>
+                <button class="nav-tab" onclick="switchTab('coord')">Coordenação</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-container">
+
+        <!-- ================= ABA 1: ALUNOS E COMANDO ================= -->
+        <section id="tab-alunos" class="tab-view active">
+            
+            <!-- DESTAQUES DA CADEIA DE COMANDO -->
+            <div class="section-title-wrap">
+                <h2 class="section-title">Cadeia de Comando (Xerifado)</h2>
+                <p class="section-desc">Liderança e Estado-Maior da Turma de Alunos</p>
+            </div>
+
+            <div class="command-grid" id="command-grid">
+                <!-- Inserido dinamicamente via JS -->
+            </div>
+
+            <!-- LISTA DE ALUNOS -->
+            <div class="section-title-wrap">
+                <h2 class="section-title">Efetivo de Alunos</h2>
+                <p class="section-desc">Clique no nome para visualizar o dossiê individual completo</p>
+            </div>
+
+            <!-- Barra de Busca -->
+            <div class="search-bar-wrap">
+                <input type="text" id="search-input" class="search-input" placeholder="Buscar aluno por nome, canga ou número...">
+                <div class="count-badge" id="student-count">0 Alunos</div>
+            </div>
+
+            <div class="students-grid" id="students-grid">
+                <!-- Inserido dinamicamente via JS -->
+            </div>
+        </section>
+
+        <!-- ================= ABA 2: MATÉRIAS E MATERIAIS ================= -->
+        <section id="tab-materias" class="tab-view">
+            <div class="section-title-wrap">
+                <h2 class="section-title">Matérias & Disciplinas</h2>
+                <p class="section-desc">Apostilas, manuais operacionais e slides de instrução</p>
+            </div>
+
+            <div class="materias-grid">
+                <div class="materia-card">
+                    <span class="materia-code">MOD-01 • Operacional</span>
+                    <h3 class="materia-name">Armamento e Tiro Tático</h3>
+                    <p class="materia-info">Fundamentos do tiro de combate, saque rápido, panes, posições de tiro defensivo e balística policial aplicada.</p>
+                    <div class="materia-links">
+                        <a href="#baixar" onclick="alert('Download da Apostila iniciado (Simulação)')" class="materia-btn">📖 Apostila</a>
+                        <a href="#slides" onclick="alert('Visualização de Slides aberta (Simulação)')" class="materia-btn">📊 Slides</a>
+                    </div>
+                </div>
+
+                <div class="materia-card">
+                    <span class="materia-code">MOD-02 • Investigação</span>
+                    <h3 class="materia-name">Técnicas de Investigação Policial</h3>
+                    <p class="materia-info">Metodologia investigativa, local de crime, cadeia de custódia da prova, entrevistas e relatórios de inteligência.</p>
+                    <div class="materia-links">
+                        <a href="#baixar" onclick="alert('Download da Apostila iniciado')" class="materia-btn">📖 Apostila</a>
+                        <a href="#slides" onclick="alert('Visualização de Slides')" class="materia-btn">📊 Slides</a>
+                    </div>
+                </div>
+
+                <div class="materia-card">
+                    <span class="materia-code">MOD-03 • Tático</span>
+                    <h3 class="materia-name">Abordagem Policial e CQB</h3>
+                    <p class="materia-info">Técnicas de entrada tática, combate em ambientes confinados, progressão veicular e imobilizações táticas.</p>
+                    <div class="materia-links">
+                        <a href="#baixar" onclick="alert('Download da Apostila iniciado')" class="materia-btn">📖 Apostila</a>
+                        <a href="#slides" onclick="alert('Visualização de Slides')" class="materia-btn">📊 Slides</a>
+                    </div>
+                </div>
+
+                <div class="materia-card">
+                    <span class="materia-code">MOD-04 • Jurídico</span>
+                    <h3 class="materia-name">Legislação e Direito Policial</h3>
+                    <p class="materia-info">Inquérito Policial, prisão em flagrante, cumprimento de mandados de busca e apreensão e jurisprudência dos tribunais.</p>
+                    <div class="materia-links">
+                        <a href="#baixar" onclick="alert('Download da Apostila iniciado')" class="materia-btn">📖 Apostila</a>
+                        <a href="#slides" onclick="alert('Visualização de Slides')" class="materia-btn">📊 Slides</a>
+                    </div>
+                </div>
+
+                <div class="materia-card">
+                    <span class="materia-code">MOD-05 • Forense</span>
+                    <h3 class="materia-name">Medicina Legal e Toxicologia</h3>
+                    <p class="materia-info">Traumatologia forense, cronotanatognose, asfixiologia e interpretação preliminar de laudos necroscópicos.</p>
+                    <div class="materia-links">
+                        <a href="#baixar" onclick="alert('Download da Apostila iniciado')" class="materia-btn">📖 Apostila</a>
+                        <a href="#slides" onclick="alert('Visualização de Slides')" class="materia-btn">📊 Slides</a>
+                    </div>
+                </div>
+
+                <div class="materia-card">
+                    <span class="materia-code">MOD-06 • Saúde</span>
+                    <h3 class="materia-name">Atendimento Pré-Hospitalar (APH)</h3>
+                    <p class="materia-info">Protocolo MARC 1 tático, controle maciço de hemorragias, torniquetes, selos de tórax e evacuação aeromédica.</p>
+                    <div class="materia-links">
+                        <a href="#baixar" onclick="alert('Download da Apostila iniciado')" class="materia-btn">📖 Apostila</a>
+                        <a href="#slides" onclick="alert('Visualização de Slides')" class="materia-btn">📊 Slides</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ABA 3: QUADRO DE AVISOS ================= -->
+        <section id="tab-avisos" class="tab-view">
+            <div class="section-title-wrap">
+                <h2 class="section-title">Quadro de Avisos & Ordens</h2>
+                <p class="section-desc">Comunicados oficiais da coordenação e diretrizes do curso</p>
+            </div>
+
+            <div class="notices-list">
+                <div class="notice-card urgent">
+                    <div class="notice-meta">
+                        <span class="notice-tag priority">Urgente • Instrução de Tiro</span>
+                        <span class="notice-date">Publicado hoje às 07:30</span>
+                    </div>
+                    <h3 class="notice-title">Horário de Formatura no Estande e EPI Obrigatório</h3>
+                    <p class="notice-body">Todos os alunos devem estar em forma às 07h00 no pátio do estande de tiro portando coldre rígido, óculos de proteção balística, abafador concha e 2 carregadores municiados a seco para verificação de segurança pelo S3.</p>
+                </div>
+
+                <div class="notice-card">
+                    <div class="notice-meta">
+                        <span class="notice-tag general">Administrativo</span>
+                        <span class="notice-date">Ontem às 18:40</span>
+                    </div>
+                    <h3 class="notice-title">Uniforme do Dia e Inspeção de Documentos</h3>
+                    <p class="notice-body">Conforme determinação do Xerife geral, amanhã o uniforme será 3º R (Operacional com coturno engraxado). O S1 recolherá as cópias atualizadas dos atestados e categorias de CNH para o cadastro interno da academia.</p>
+                </div>
+
+                <div class="notice-card">
+                    <div class="notice-meta">
+                        <span class="notice-tag general">Educação Física</span>
+                        <span class="notice-date">02/09/2026</span>
+                    </div>
+                    <h3 class="notice-title">Treinamento Físico Militar / Pista de Obstáculos</h3>
+                    <p class="notice-body">A instrução de TFM terá início pontualmente às 06h00 com uniforme de educação física padronizado. É mandatório que cada canga certifique-se da hidratação mútua antes da corrida contínua.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ABA 4: COORDENAÇÃO ================= -->
+        <section id="tab-coord" class="tab-view">
+            <div class="section-title-wrap">
+                <h2 class="section-title">Coordenação do Curso</h2>
+                <p class="section-desc">Equipe diretiva, corpo de instrutores e apoio pedagógico</p>
+            </div>
+
+            <div class="coord-grid">
+                <div class="coord-card">
+                    <div class="coord-avatar">🏛️</div>
+                    <h3 class="coord-name">Dr. Carlos Eduardo Menezes</h3>
+                    <div class="coord-role">Delegado Diretor da Academia</div>
+                    <p class="coord-desc">Responsável pela gestão estratégica, homologação de planos de ensino e disciplina institucional do CFP.</p>
+                </div>
+
+                <div class="coord-card">
+                    <div class="coord-avatar">🎖️</div>
+                    <h3 class="coord-name">Dr. Fernando Bastos</h3>
+                    <div class="coord-role">Delegado Coordenador do CFP</div>
+                    <p class="coord-desc">Supervisão pedagógica diária, escalas de instrutores e acompanhamento de desempenho dos pelotões.</p>
+                </div>
+
+                <div class="coord-card">
+                    <div class="coord-avatar">🎯</div>
+                    <h3 class="coord-name">Inspetor Roberto Silveira</h3>
+                    <div class="coord-role">Chefe de Instrução Tática</div>
+                    <p class="coord-desc">Coordenação dos módulos operacionais de armamento, tiro de precisão, abordagem veicular e APH.</p>
+                </div>
+
+                <div class="coord-card">
+                    <div class="coord-avatar">⚖️</div>
+                    <h3 class="coord-name">Dra. Juliana Vasconcelos</h3>
+                    <div class="coord-role">Chefe da Seção Jurídica e Ensino</div>
+                    <p class="coord-desc">Gestão dos módulos de Direito Penal, Processo, Inquérito e avaliação das provas acadêmicas teóricas.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= MODAL DO PERFIL / DOSSIÊ DO ALUNO ================= -->
+    <div class="modal-backdrop" id="modal-backdrop" onclick="closeModalOnBackdrop(event)">
+        <div class="modal-dossier" id="modal-dossier">
+            <div class="modal-header">
+                <span class="modal-header-title">Dossiê do Aluno</span>
+                <button class="modal-close-btn" onclick="closeModal()">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="dossier-hero">
+                    <div class="dossier-photo" id="m-avatar">A</div>
+                    <div class="dossier-titles">
+                        <h2 id="m-nome-guerra">ALUNO SILVA</h2>
+                        <span class="dossier-role-tag" id="m-funcao">Pelotão Alfa</span>
+                    </div>
+                </div>
+
+                <div class="dossier-grid">
+                    <div class="dossier-field full">
+                        <div class="field-label">Nome Completo</div>
+                        <div class="field-val" id="m-nome-completo">-</div>
+                    </div>
+
+                    <div class="dossier-field">
+                        <div class="field-label">Nome do Canga</div>
+                        <div class="field-val" id="m-canga">-</div>
+                    </div>
+
+                    <div class="dossier-field">
+                        <div class="field-label">Categoria CNH</div>
+                        <div class="field-val" id="m-cnh">-</div>
+                    </div>
+
+                    <div class="dossier-field">
+                        <div class="field-label">Fator RH / Sangue</div>
+                        <div class="field-val alert-rh" id="m-rh">-</div>
+                    </div>
+
+                    <div class="dossier-field">
+                        <div class="field-label">Faltas Computadas</div>
+                        <div class="field-val" id="m-faltas">-</div>
+                    </div>
+
+                    <div class="dossier-field">
+                        <div class="field-label">Telefone Direto</div>
+                        <div class="field-val" id="m-telefone">-</div>
+                    </div>
+
+                    <div class="dossier-field">
+                        <div class="field-label">Contato de Emergência</div>
+                        <div class="field-val" id="m-emergencia">-</div>
+                    </div>
+
+                    <div class="dossier-field full">
+                        <div class="field-label">Endereço Residencial</div>
+                        <div class="field-val" id="m-endereco">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RODAPÉ -->
+    <footer>
+        Comissão Oficial do Curso de Formação Profissional • Polícia Civil de Roraima
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // ================= BASE DE DADOS FICTÍCIA DOS ALUNOS =================
+        const alunos = [
+            {
+                id: 1,
+                numero: "01",
+                nomeGuerra: "XERIFE ALMEIDA",
+                nomeCompleto: "Marcos Vinicius de Almeida",
+                funcao: "Xerife Geral",
+                isComando: true,
+                badge: "XERIFE",
+                cnh: "AB",
+                canga: "Aluno Carvalho",
+                rh: "O+",
+                emergencia: "Helena Almeida (Esposa) - (95) 99111-2233",
+                telefone: "(95) 98101-1001",
+                endereco: "Rua das Flores, 142, Bairro dos Estados, Boa Vista - RR",
+                faltas: 0
+            },
+            {
+                id: 2,
+                numero: "02",
+                nomeGuerra: "SUB-XERIFE CARVALHO",
+                nomeCompleto: "Felipe Carvalho Duarte",
+                funcao: "Sub-Xerife",
+                isComando: true,
+                badge: "SUB-XERIFE",
+                cnh: "AD",
+                canga: "Aluno Almeida",
+                rh: "A+",
+                emergencia: "Maria Carvalho (Mãe) - (95) 99122-3344",
+                telefone: "(95) 98102-1002",
+                endereco: "Av. Ville Roy, 5800, Caçari, Boa Vista - RR",
+                faltas: 0
+            },
+            {
+                id: 3,
+                numero: "03",
+                nomeGuerra: "ALUNO SOUZA (S1)",
+                nomeCompleto: "Guilherme de Souza Rocha",
+                funcao: "S1 - Pessoal e Efetivo",
+                isComando: true,
+                badge: "S1",
+                cnh: "B",
+                canga: "Aluno Oliveira",
+                rh: "B+",
+                emergencia: "Beatriz Rocha (Irmã) - (95) 99133-4455",
+                telefone: "(95) 98103-1003",
+                endereco: "Rua Coronel Mota, 310, Centro, Boa Vista - RR",
+                faltas: 1
+            },
+            {
+                id: 4,
+                numero: "04",
+                nomeGuerra: "ALUNO LIMA (S2)",
+                nomeCompleto: "Thiago Lima Fontenele",
+                funcao: "S2 - Inteligência e Comunicação",
+                isComando: true,
+                badge: "S2",
+                cnh: "AB",
+                canga: "Aluno Rodrigues",
+                rh: "O-",
+                emergencia: "Clara Lima (Mãe) - (95) 99144-5566",
+                telefone: "(95) 98104-1004",
+                endereco: "Rua Cecília Meireles, 89, Paraviana, Boa Vista - RR",
+                faltas: 0
+            },
+            {
+                id: 5,
+                numero: "05",
+                nomeGuerra: "ALUNO RODRIGUES (S3)",
+                nomeCompleto: "Lucas Rodrigues Pereira",
+                funcao: "S3 - Instrução e Operações",
+                isComando: true,
+                badge: "S3",
+                cnh: "AE",
+                canga: "Aluno Lima",
+                rh: "AB+",
+                emergencia: "Patricia Rodrigues (Esposa) - (95) 99155-6677",
+                telefone: "(95) 98105-1005",
+                endereco: "Av. Brigadeiro Eduardo Gomes, 1204, Aeroporto, Boa Vista - RR",
+                faltas: 0
+            },
+            {
+                id: 6,
+                numero: "06",
+                nomeGuerra: "ALUNO BARBOSA",
+                nomeCompleto: "Renato Barbosa Cavalcante",
+                funcao: "Aluno do Pelotão",
+                isComando: false,
+                cnh: "B",
+                canga: "Aluno Nascimento",
+                rh: "O+",
+                emergencia: "Carlos Barbosa (Pai) - (95) 99166-7788",
+                telefone: "(95) 98106-1006",
+                endereco: "Rua Alfredo Cruz, 240, Centro, Boa Vista - RR",
+                faltas: 2
+            },
+            {
+                id: 7,
+                numero: "07",
+                nomeGuerra: "ALUNO NASCIMENTO",
+                nomeCompleto: "Rodrigo Nascimento Silva",
+                funcao: "Aluno do Pelotão",
+                isComando: false,
+                cnh: "AB",
+                canga: "Aluno Barbosa",
+                rh: "A-",
+                emergencia: "Juliana Silva (Irmã) - (95) 99177-8899",
+                telefone: "(95) 98107-1007",
+                endereco: "Rua Major Manoel Correia, 45, São Francisco, Boa Vista - RR",
+                faltas: 0
+            },
+            {
+                id: 8,
+                numero: "08",
+                nomeGuerra: "ALUNA MENDES",
+                nomeCompleto: "Camila Mendes de Oliveira",
+                funcao: "Aluna do Pelotão",
+                isComando: false,
+                cnh: "B",
+                canga: "Aluna Ferreira",
+                rh: "B-",
+                emergencia: "Roberto Mendes (Pai) - (95) 99188-9900",
+                telefone: "(95) 98108-1008",
+                endereco: "Av. Major Williams, 780, São Pedro, Boa Vista - RR",
+                faltas: 0
+            },
+            {
+                id: 9,
+                numero: "09",
+                nomeGuerra: "ALUNA FERREIRA",
+                nomeCompleto: "Larissa Ferreira Pires",
+                funcao: "Aluna do Pelotão",
+                isComando: false,
+                cnh: "AB",
+                canga: "Aluna Mendes",
+                rh: "O+",
+                emergencia: "Valéria Ferreira (Mãe) - (95) 99199-0011",
+                telefone: "(95) 98109-1009",
+                endereco: "Rua Barão do Rio Branco, 620, Centro, Boa Vista - RR",
+                faltas: 1
+            },
+            {
+                id: 10,
+                numero: "10",
+                nomeGuerra: "ALUNO TEIXEIRA",
+                nomeCompleto: "Diego Teixeira Prado",
+                funcao: "Aluno do Pelotão",
+                isComando: false,
+                cnh: "B",
+                canga: "Aluno Vasconcelos",
+                rh: "A+",
+                emergencia: "Amanda Prado (Esposa) - (95) 99200-1122",
+                telefone: "(95) 98110-1010",
+                endereco: "Rua Pedro Rodrigues, 115, Mecejana, Boa Vista - RR",
+                faltas: 0
+            },
+            {
+                id: 11,
+                numero: "11",
+                nomeGuerra: "ALUNO VASCONCELOS",
+                nomeCompleto: "Gustavo Vasconcelos Rios",
+                funcao: "Aluno do Pelotão",
+                isComando: false,
+                cnh: "AC",
+                canga: "Aluno Teixeira",
+                rh: "O+",
+                emergencia: "Eduardo Rios (Irmão) - (95) 99211-2233",
+                telefone: "(95) 98111-1011",
+                endereco: "Rua José Magalhães, 510, Centro, Boa Vista - RR",
+                faltas: 3
+            },
+            {
+                id: 12,
+                numero: "12",
+                nomeGuerra: "ALUNA COSTA",
+                nomeCompleto: "Mariana Costa Albuquerque",
+                funcao: "Aluna do Pelotão",
+                isComando: false,
+                cnh: "B",
+                canga: "Aluno Martins",
+                rh: "AB-",
+                emergencia: "Sérgio Albuquerque (Esposo) - (95) 99222-3344",
+                telefone: "(95) 98112-1012",
+                endereco: "Av. Nossa Senhora da Consolata, 900, Centro, Boa Vista - RR",
+                faltas: 0
+            }
+        ];
+
+        // ================= RENDERIZAR COMANDO =================
+        function renderCommand() {
+            const container = document.getElementById('command-grid');
+            const comandoAlunos = alunos.filter(a => a.isComando);
+            
+            container.innerHTML = comandoAlunos.map(aluno => `
+                <div class="command-card" onclick="openModal(${aluno.id})">
+                    <span class="command-role">${aluno.badge}</span>
+                    <div class="command-avatar">${aluno.nomeGuerra.charAt(0)}</div>
+                    <h3 class="command-name">${aluno.nomeGuerra}</h3>
+                    <p class="command-sub">${aluno.nomeCompleto}</p>
+                </div>
+            `).join('');
+        }
+
+        // ================= RENDERIZAR LISTA DE ALUNOS =================
+        function renderStudents(list) {
+            const container = document.getElementById('students-grid');
+            const countElem = document.getElementById('student-count');
+            
+            countElem.innerText = `${list.length} Alunos`;
+
+            if (list.length === 0) {
+                container.innerHTML = `<div style="grid-column: 1/-1; padding: 2rem; color: var(--text-muted);">Nenhum aluno encontrado na busca.</div>`;
+                return;
+            }
+
+            container.innerHTML = list.map(aluno => `
+                <div class="student-card" onclick="openModal(${aluno.id})">
+                    <div class="student-avatar">${aluno.numero}</div>
+                    <div class="student-info">
+                        <div class="student-name">${aluno.nomeGuerra}</div>
+                        <div class="student-canga">Canga: <strong>${aluno.canga}</strong></div>
+                        <div class="student-meta">
+                            <span class="mini-pill pill-rh">${aluno.rh}</span>
+                            <span class="mini-pill pill-cnh">CNH ${aluno.cnh}</span>
+                            <span class="mini-pill pill-faltas ${aluno.faltas > 0 ? 'has-faltas' : ''}">
+                                ${aluno.faltas === 0 ? '0 faltas' : aluno.faltas + ' falta(s)'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ================= FILTRO DE BUSCA =================
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase().trim();
+            const filtered = alunos.filter(a => 
+                a.nomeGuerra.toLowerCase().includes(val) ||
+                a.nomeCompleto.toLowerCase().includes(val) ||
+                a.canga.toLowerCase().includes(val) ||
+                a.numero.includes(val)
+            );
+            renderStudents(filtered);
+        });
+
+        // ================= CONTROLE DE MODAL =================
+        function openModal(id) {
+            const aluno = alunos.find(a => a.id === id);
+            if (!aluno) return;
+
+            document.getElementById('m-avatar').innerText = aluno.numero;
+            document.getElementById('m-nome-guerra').innerText = aluno.nomeGuerra;
+            document.getElementById('m-funcao').innerText = aluno.funcao;
+            document.getElementById('m-nome-completo').innerText = aluno.nomeCompleto;
+            document.getElementById('m-canga').innerText = aluno.canga;
+            document.getElementById('m-cnh').innerText = aluno.cnh;
+            document.getElementById('m-rh').innerText = aluno.rh;
+            document.getElementById('m-faltas').innerText = aluno.faltas === 0 ? 'Nenhuma falta registrada (100% de presença)' : `${aluno.faltas} falta(s) computada(s)`;
+            document.getElementById('m-telefone').innerText = aluno.telefone;
+            document.getElementById('m-emergencia').innerText = aluno.emergencia;
+            document.getElementById('m-endereco').innerText = aluno.endereco;
+
+            document.getElementById('modal-backdrop').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modal-backdrop').classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        function closeModalOnBackdrop(e) {
+            if (e.target.id === 'modal-backdrop') closeModal();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // ================= NAVEGAÇÃO DE ABAS =================
+        function switchTab(tabKey) {
+            document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+
+            const view = document.getElementById(`tab-${tabKey}`);
+            if (view) view.classList.add('active');
+
+            // Destacar o botão clicado
+            const targetBtn = Array.from(document.querySelectorAll('.nav-tab'))
+                .find(btn => btn.getAttribute('onclick').includes(tabKey));
+            if (targetBtn) targetBtn.classList.add('active');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // INICIALIZAÇÃO
+        renderCommand();
+        renderStudents(alunos);
+    </script>
+</body>
+</html>

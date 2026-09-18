@@ -14,12 +14,12 @@
 
     <style>
         :root {
-            --bg-base: #090d16;
-            --bg-surface: #0f172a;
-            --bg-card: #131d33;
-            --bg-card-hover: #182542;
-            --border-subtle: #1e293b;
-            --border-highlight: #334155;
+            --bg-base: #04070d;       /* Azul marinho profundo atualizado */
+            --bg-surface: #090e1a;    /* Superfícies levemente mais escuras */
+            --bg-card: #0e1526;       /* Cards em tom azul escuro */
+            --bg-card-hover: #131c33;
+            --border-subtle: #17223b;
+            --border-highlight: #283859;
             
             --brass-gold: #c5a059;
             --brass-gold-dim: rgba(197, 160, 89, 0.12);
@@ -61,7 +61,7 @@
 
         /* --- BARRA DE SINCRONIZAÇÃO --- */
         .sync-bar {
-            background: #060910;
+            background: #020408;
             border-bottom: 1px solid var(--border-subtle);
             padding: 5px 1rem;
             display: flex;
@@ -113,7 +113,7 @@
 
         /* --- HEADER INSTITUCIONAL --- */
         header {
-            background: rgba(9, 13, 22, 0.96);
+            background: rgba(4, 7, 13, 0.96);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-subtle);
             position: sticky;
@@ -476,7 +476,7 @@
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(6px);
             z-index: 200;
             display: none;
@@ -490,7 +490,7 @@
         .dossier-sheet {
             width: 100%;
             max-width: 600px;
-            background: #0d1526;
+            background: #080d1a;
             border-top: 1px solid var(--brass-border);
             border-left: 1px solid var(--border-subtle);
             border-right: 1px solid var(--border-subtle);
@@ -499,7 +499,7 @@
             max-height: 88vh;
             overflow-y: auto;
             animation: sheetUp 0.25s cubic-bezier(0.2, 0.9, 0.3, 1);
-            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7);
         }
 
         @media (min-width: 641px) {
@@ -893,15 +893,11 @@
 
     <!-- LÓGICA DE INTEGRAÇÃO COM A PLANILHA DO GOOGLE -->
     <script>
-        // =========================================================================
-        // COLE O LINK CSV DA SUA PLANILHA ENTRE AS ASPAS ABAIXO:
-        // =========================================================================
         const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsv0cEgGn3J3ZK4y1hIaw1IOFenVmJa3FllWJ_Do2NcuXTgiLe5CM3EaO1uIlobg/pub?output=csv";
 
         let alunos = [];
         let currentFilter = 'todos';
 
-        // Mapeamento automático dos códigos do Xerifado (Coluna S)
         const MAPA_XERIFADO = {
             "1": "XERIFE",
             "2": "SUB-XERIFE",
@@ -910,13 +906,11 @@
             "5": "S3"
         };
 
-        // DADOS DE EXEMPLO (Caso execute sem link configurado)
         const alunosIniciais = [
             { id: 1, num: "01", nomeGuerra: "ALBERTI", nomeCompleto: "RAYANE DA SILVA ALBERTI", rh: "A+", canga: "ROZANA AZEVEDO", foMais: "0", foMenos: "0", xerifeNum: "1", cpf: "013.871.472-00", nascimento: "31/07/1997", cnh: "AB", rg: "CIN", vunesp: "21350396", telefone: "(95) 99129-4079", emergTel: "(95) 99170-0310", emergParentesco: "Nathamy (irmã)", endereco: "Rua Aquário, 1360 - Cidade Satélite" },
             { id: 2, num: "02", nomeGuerra: "ALLANA", nomeCompleto: "ALLANA LEAL RODRIGUES DOS SANTOS", rh: "O+", canga: "MENDES", foMais: "1", foMenos: "0", xerifeNum: "2", cpf: "025.725.562-19", nascimento: "31/01/1996", cnh: "AB", rg: "3700666", vunesp: "20033591", telefone: "(95) 99164-7019", emergTel: "95991685343", emergParentesco: "ESPOSO JOSUEL", endereco: "Rua Iugoslávia, 870, Cauamé" }
         ];
 
-        // Processa os dados brutos da planilha
         function processRawData(rows) {
             let headerIdx = -1;
             for (let i = 0; i < Math.min(6, rows.length); i++) {
@@ -949,7 +943,6 @@
                     return '';
                 };
 
-                // Pega valor por índice exato se colunas padrão (P=15, Q=16, R=17, S=18)
                 const getColByIndex = (index) => (row[index] !== undefined ? row[index].toString().trim() : '');
 
                 const rawNum = getVal(['nº', 'num', 'no']);
@@ -957,16 +950,16 @@
                 const guerra = (getVal(['nome de guerra', 'guerra']) || `ALUNO ${num}`).toUpperCase();
                 const completo = getVal(['nome completo', 'completo']) || guerra;
                 
-                // Coluna P (Índice 15): Canga
+                // Coluna P (15): Canga
                 const canga = getVal(['canga']) || getColByIndex(15) || '-';
                 
-                // Coluna Q (Índice 16): FO+
+                // Coluna Q (16): FO+
                 const foMais = getVal(['fo+', 'fomais', 'fo mais']) || getColByIndex(16) || '0';
                 
-                // Coluna R (Índice 17): FO-
+                // Coluna R (17): FO-
                 const foMenos = getVal(['fo-', 'fomenos', 'fo menos']) || getColByIndex(17) || '0';
                 
-                // Coluna S (Índice 18): Xerifado (1, 2, 3, 4, 5)
+                // Coluna S (18): Xerifado
                 const xerifeNum = getVal(['xerife', 'comando', 'funcao']) || getColByIndex(18) || '';
                 
                 const funcaoXerife = MAPA_XERIFADO[xerifeNum] || '';
@@ -1011,7 +1004,6 @@
             return parsed;
         }
 
-        // Requisição para a planilha do Google
         async function fetchSpreadsheetData() {
             const syncDot = document.getElementById('sync-dot');
             const syncText = document.getElementById('sync-text');
@@ -1067,10 +1059,8 @@
             }
         }
 
-        // ================= RENDERIZAR XERIFADO (COMANDO) =================
         function renderCommand() {
             const container = document.getElementById('command-strip');
-            // Filtra e ordena pelos números de xerife (1 até 5)
             const comando = alunos
                 .filter(a => a.isComando)
                 .sort((a, b) => parseInt(a.xerifeNum) - parseInt(b.xerifeNum));
@@ -1091,7 +1081,6 @@
             `).join('');
         }
 
-        // ================= RENDERIZAR LISTAGEM =================
         function renderList(list) {
             const container = document.getElementById('students-list');
             const countLabel = document.getElementById('student-total-label');
@@ -1127,7 +1116,6 @@
             `).join('');
         }
 
-        // ================= FILTROS E BUSCA =================
         function filterData() {
             const query = document.getElementById('search-input').value.toLowerCase().trim();
             const clearBtn = document.getElementById('clear-search-btn');
@@ -1168,7 +1156,6 @@
             filterData();
         }
 
-        // ================= DOSSIÊ / MODAL DO ALUNO =================
         function openModal(id) {
             const a = alunos.find(item => item.id === id);
             if (!a) return;
@@ -1177,7 +1164,6 @@
             document.getElementById('d-funcao').innerText = a.isComando ? `${a.badgeComando} • TURMA BRAVO` : "TURMA BRAVO • CFP PCRR 2026";
             document.getElementById('d-nome-completo').innerText = a.nomeCompleto;
             
-            // Canga clicável (abre o perfil do canga se encontrado)
             const cangaEl = document.getElementById('d-canga');
             cangaEl.innerText = `${a.canga} ↗`;
             cangaEl.onclick = () => {
@@ -1226,7 +1212,6 @@
             if (e.key === 'Escape') closeModal();
         });
 
-        // ================= NAVEGAÇÃO DE ABAS =================
         function navigate(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
@@ -1241,7 +1226,6 @@
             window.scrollTo({ top: 0, behavior: 'instant' });
         }
 
-        // CARREGA AO ABRIR
         fetchSpreadsheetData();
     </script>
 </body>

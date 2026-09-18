@@ -14,27 +14,27 @@
 
     <style>
         :root {
-            /* Cores baseadas no Azul Profundo e Dourado do Brasão da PC-RR */
-            --bg-base: #030712;        
-            --bg-surface: #0a1124;     
-            --bg-card: #0e1730;        
-            --bg-card-hover: #142242;
-            --border-subtle: #1b2847;
-            --border-highlight: #2f4475;
+            /* Estilo Dark Tático Puro */
+            --bg-base: #0a0c10;
+            --bg-surface: #121620;
+            --bg-card: #181d29;
+            --bg-card-hover: #1f2536;
+            --border-subtle: #222838;
+            --border-highlight: #343f58;
             
-            --brass-gold: #d4af37;     /* Dourado fiel ao distintivo */
-            --brass-gold-dim: rgba(212, 175, 55, 0.12);
-            --brass-border: rgba(212, 175, 55, 0.35);
+            --accent-color: #38bdf8; /* Azul tático moderno e nítido */
+            --accent-dim: rgba(56, 189, 248, 0.12);
+            --accent-border: rgba(56, 189, 248, 0.3);
 
-            --text-primary: #f8fafc;
+            --text-primary: #f1f5f9;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
 
-            --danger: #ef4444;
-            --danger-bg: rgba(239, 68, 68, 0.12);
+            --danger: #f43f5e;
+            --danger-bg: rgba(244, 63, 94, 0.12);
             --success: #10b981;
             --success-bg: rgba(16, 185, 129, 0.12);
-            --warning: #f59e0b;
+            --warning: #fbbf24;
 
             --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             --font-mono: 'Space Grotesk', monospace;
@@ -62,9 +62,9 @@
 
         /* --- BARRA DE SINCRONIZAÇÃO --- */
         .sync-bar {
-            background: #01040a;
+            background: #050608;
             border-bottom: 1px solid var(--border-subtle);
-            padding: 5px 1rem;
+            padding: 6px 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -108,13 +108,13 @@
         }
 
         .btn-refresh:active {
-            background: var(--brass-gold-dim);
-            color: var(--brass-gold);
+            background: var(--accent-dim);
+            color: var(--accent-color);
         }
 
         /* --- HEADER INSTITUCIONAL --- */
         header {
-            background: rgba(3, 7, 18, 0.96);
+            background: rgba(10, 12, 16, 0.95);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-subtle);
             position: sticky;
@@ -141,12 +141,12 @@
             width: 36px;
             height: 36px;
             border-radius: var(--radius-md);
-            background: var(--brass-gold-dim);
-            border: 1px solid var(--brass-border);
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--brass-gold);
+            color: var(--accent-color);
             flex-shrink: 0;
         }
 
@@ -162,8 +162,8 @@
         .brand-meta h1 .tag-org {
             font-size: 0.65rem;
             font-family: var(--font-mono);
-            color: var(--brass-gold);
-            border: 1px solid var(--brass-border);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-border);
             padding: 1px 5px;
             border-radius: 4px;
         }
@@ -210,8 +210,8 @@
         .nav-tab svg { width: 15px; height: 15px; stroke-width: 2; }
         .nav-tab.active {
             background: var(--bg-card);
-            color: var(--brass-gold);
-            border-color: var(--brass-border);
+            color: var(--accent-color);
+            border-color: var(--accent-border);
         }
 
         /* --- CONTEÚDO PRINCIPAL --- */
@@ -239,7 +239,7 @@
             font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--brass-gold);
+            color: var(--accent-color);
             font-weight: 700;
         }
 
@@ -273,7 +273,7 @@
         }
 
         .command-item:hover, .command-item:active {
-            border-color: var(--brass-gold);
+            border-color: var(--accent-color);
             background: var(--bg-card);
         }
 
@@ -281,9 +281,9 @@
             font-size: 0.65rem;
             font-family: var(--font-mono);
             font-weight: 700;
-            color: var(--brass-gold);
-            background: var(--brass-gold-dim);
-            border: 1px solid var(--brass-border);
+            color: var(--accent-color);
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
             padding: 2px 6px;
             border-radius: 4px;
             display: inline-block;
@@ -340,7 +340,7 @@
             transition: border-color 0.2s;
         }
 
-        .search-input:focus { border-color: var(--brass-gold); }
+        .search-input:focus { border-color: var(--accent-color); }
 
         .clear-search-btn {
             position: absolute;
@@ -377,9 +377,9 @@
         }
 
         .pill-btn.active {
-            background: var(--brass-gold-dim);
-            color: var(--brass-gold);
-            border-color: var(--brass-border);
+            background: var(--accent-dim);
+            color: var(--accent-color);
+            border-color: var(--accent-border);
             font-weight: 600;
         }
 
@@ -466,10 +466,10 @@
             border-radius: 4px;
         }
 
-        .tag-pill.rh { background: var(--danger-bg); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.25); }
-        .tag-pill.cnh { background: var(--brass-gold-dim); color: var(--brass-gold); border: 1px solid var(--brass-border); }
+        .tag-pill.rh { background: var(--danger-bg); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.25); }
+        .tag-pill.cnh { background: var(--accent-dim); color: var(--accent-color); border: 1px solid var(--accent-border); }
         .tag-pill.fo-p { background: var(--success-bg); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.25); }
-        .tag-pill.fo-n { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.25); }
+        .tag-pill.fo-n { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.25); }
 
         .chevron-icon { color: var(--text-muted); width: 18px; height: 18px; }
 
@@ -491,8 +491,8 @@
         .dossier-sheet {
             width: 100%;
             max-width: 600px;
-            background: #070e20;
-            border-top: 1px solid var(--brass-border);
+            background: #121722;
+            border-top: 1px solid var(--accent-border);
             border-left: 1px solid var(--border-subtle);
             border-right: 1px solid var(--border-subtle);
             border-radius: 16px 16px 0 0;
@@ -507,7 +507,7 @@
             .modal-overlay { align-items: center; padding: 1.5rem; }
             .dossier-sheet {
                 border-radius: var(--radius-lg);
-                border: 1px solid var(--brass-border);
+                border: 1px solid var(--accent-border);
                 max-height: 85vh;
                 padding: 1.5rem;
             }
@@ -532,7 +532,7 @@
         }
 
         .sheet-identity h3 { font-size: 1.15rem; font-weight: 700; color: #fff; }
-        .sheet-identity p { font-size: 0.8rem; color: var(--brass-gold); font-weight: 600; margin-top: 2px; }
+        .sheet-identity p { font-size: 0.8rem; color: var(--accent-color); font-weight: 600; margin-top: 2px; }
 
         .sheet-close-btn {
             background: rgba(255, 255, 255, 0.05);
@@ -578,9 +578,9 @@
             word-break: break-word;
         }
 
-        .cell-data.highlight-rh { color: #f87171; font-family: var(--font-mono); font-weight: 700; }
+        .cell-data.highlight-rh { color: #f43f5e; font-family: var(--font-mono); font-weight: 700; }
         .cell-data.canga-clickable {
-            color: var(--brass-gold);
+            color: var(--accent-color);
             cursor: pointer;
             text-decoration: underline;
             text-underline-offset: 3px;
@@ -598,9 +598,9 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            background: var(--brass-gold-dim);
-            border: 1px solid var(--brass-border);
-            color: var(--brass-gold);
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent-color);
             padding: 11px 14px;
             border-radius: var(--radius-md);
             font-size: 0.8rem;
@@ -610,8 +610,8 @@
 
         .action-call-btn.emergency {
             background: var(--danger-bg);
-            border-color: rgba(239, 68, 68, 0.3);
-            color: #fca5a5;
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #fda4af;
         }
 
         /* --- ABA AVISOS --- */
@@ -619,13 +619,13 @@
         .bulletin-card {
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
-            border-left: 3px solid var(--brass-gold);
+            border-left: 3px solid var(--accent-color);
             border-radius: var(--radius-md);
             padding: 1rem;
         }
         .bulletin-card.urgent { border-left-color: var(--danger); }
         .bulletin-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .bulletin-badge { font-size: 0.65rem; font-family: var(--font-mono); font-weight: 700; color: var(--brass-gold); }
+        .bulletin-badge { font-size: 0.65rem; font-family: var(--font-mono); font-weight: 700; color: var(--accent-color); }
         .bulletin-card.urgent .bulletin-badge { color: var(--danger); }
         .bulletin-date { font-size: 0.7rem; color: var(--text-muted); }
         .bulletin-title { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
@@ -634,7 +634,7 @@
         /* --- ABA COORDENAÇÃO --- */
         .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
         .staff-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem; }
-        .staff-role-badge { font-size: 0.65rem; font-family: var(--font-mono); color: var(--brass-gold); text-transform: uppercase; margin-bottom: 4px; font-weight: 700; }
+        .staff-role-badge { font-size: 0.65rem; font-family: var(--font-mono); color: var(--accent-color); text-transform: uppercase; margin-bottom: 4px; font-weight: 700; }
         .staff-name { font-size: 0.92rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
         .staff-desc { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; }
 
@@ -677,7 +677,7 @@
                     <p>CFP 2026 • 49 Alunos</p>
                 </div>
             </div>
-            <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--brass-gold);">
+            <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-color);">
                 EFETIVO OFICIAL
             </div>
         </div>
@@ -951,7 +951,7 @@
                 const guerra = (getVal(['nome de guerra', 'guerra']) || `ALUNO ${num}`).toUpperCase();
                 const completo = getVal(['nome completo', 'completo']) || guerra;
                 
-                // Mapeamento exato das colunas por posição (P=15, Q=16, R=17, S=18) com fallback por nome
+                // Mapeamento por posição (P=15, Q=16, R=17, S=18) com fallback por nome
                 const canga = getColByIndex(15) || getVal(['canga']) || '-';
                 const foMais = getColByIndex(16) || getVal(['fo+', 'fomais', 'fo mais']) || '0';
                 const foMenos = getColByIndex(17) || getVal(['fo-', 'fomenos', 'fo menos']) || '0';

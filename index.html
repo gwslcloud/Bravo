@@ -14,16 +14,17 @@
 
     <style>
         :root {
-            --bg-base: #04070d;       /* Azul marinho profundo atualizado */
-            --bg-surface: #090e1a;    /* Superfícies levemente mais escuras */
-            --bg-card: #0e1526;       /* Cards em tom azul escuro */
-            --bg-card-hover: #131c33;
-            --border-subtle: #17223b;
-            --border-highlight: #283859;
+            /* Cores baseadas no Azul Profundo e Dourado do Brasão da PC-RR */
+            --bg-base: #030712;        
+            --bg-surface: #0a1124;     
+            --bg-card: #0e1730;        
+            --bg-card-hover: #142242;
+            --border-subtle: #1b2847;
+            --border-highlight: #2f4475;
             
-            --brass-gold: #c5a059;
-            --brass-gold-dim: rgba(197, 160, 89, 0.12);
-            --brass-border: rgba(197, 160, 89, 0.3);
+            --brass-gold: #d4af37;     /* Dourado fiel ao distintivo */
+            --brass-gold-dim: rgba(212, 175, 55, 0.12);
+            --brass-border: rgba(212, 175, 55, 0.35);
 
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
@@ -61,7 +62,7 @@
 
         /* --- BARRA DE SINCRONIZAÇÃO --- */
         .sync-bar {
-            background: #020408;
+            background: #01040a;
             border-bottom: 1px solid var(--border-subtle);
             padding: 5px 1rem;
             display: flex;
@@ -113,7 +114,7 @@
 
         /* --- HEADER INSTITUCIONAL --- */
         header {
-            background: rgba(4, 7, 13, 0.96);
+            background: rgba(3, 7, 18, 0.96);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-subtle);
             position: sticky;
@@ -476,7 +477,7 @@
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(6px);
             z-index: 200;
             display: none;
@@ -490,7 +491,7 @@
         .dossier-sheet {
             width: 100%;
             max-width: 600px;
-            background: #080d1a;
+            background: #070e20;
             border-top: 1px solid var(--brass-border);
             border-left: 1px solid var(--border-subtle);
             border-right: 1px solid var(--border-subtle);
@@ -950,17 +951,11 @@
                 const guerra = (getVal(['nome de guerra', 'guerra']) || `ALUNO ${num}`).toUpperCase();
                 const completo = getVal(['nome completo', 'completo']) || guerra;
                 
-                // Coluna P (15): Canga
-                const canga = getVal(['canga']) || getColByIndex(15) || '-';
-                
-                // Coluna Q (16): FO+
-                const foMais = getVal(['fo+', 'fomais', 'fo mais']) || getColByIndex(16) || '0';
-                
-                // Coluna R (17): FO-
-                const foMenos = getVal(['fo-', 'fomenos', 'fo menos']) || getColByIndex(17) || '0';
-                
-                // Coluna S (18): Xerifado
-                const xerifeNum = getVal(['xerife', 'comando', 'funcao']) || getColByIndex(18) || '';
+                // Mapeamento exato das colunas por posição (P=15, Q=16, R=17, S=18) com fallback por nome
+                const canga = getColByIndex(15) || getVal(['canga']) || '-';
+                const foMais = getColByIndex(16) || getVal(['fo+', 'fomais', 'fo mais']) || '0';
+                const foMenos = getColByIndex(17) || getVal(['fo-', 'fomenos', 'fo menos']) || '0';
+                const xerifeNum = getColByIndex(18) || getVal(['xerife', 'comando', 'funcao']) || '';
                 
                 const funcaoXerife = MAPA_XERIFADO[xerifeNum] || '';
                 const isComando = funcaoXerife !== '';

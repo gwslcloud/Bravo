@@ -1,35 +1,44 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CFP PCRR • Sistema de Gestão do Pelotão</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TURMA BRAVO • CFP PCRR 2026</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Parser CSV do Google Sheets -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
     <style>
         :root {
             --bg-base: #090d16;
             --bg-surface: #0f172a;
-            --bg-elevated: #162035;
-            --bg-hover: #1e2d4a;
-            --border-subtle: rgba(148, 163, 184, 0.12);
-            --border-medium: rgba(148, 163, 184, 0.22);
+            --bg-card: #131d33;
+            --bg-card-hover: #182542;
+            --border-subtle: #1e293b;
+            --border-highlight: #334155;
+            
+            --brass-gold: #c5a059;
+            --brass-gold-dim: rgba(197, 160, 89, 0.12);
+            --brass-border: rgba(197, 160, 89, 0.3);
+
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
-            --text-tertiary: #64748b;
-            --brass: #c5a059;
-            --brass-light: #dfbe7e;
-            --brass-dim: rgba(197, 160, 89, 0.15);
+            --text-muted: #64748b;
+
             --danger: #ef4444;
-            --danger-dim: rgba(239, 68, 68, 0.15);
+            --danger-bg: rgba(239, 68, 68, 0.12);
             --success: #10b981;
-            --success-dim: rgba(16, 185, 129, 0.15);
+            --success-bg: rgba(16, 185, 129, 0.12);
             --warning: #f59e0b;
-            --warning-dim: rgba(245, 158, 11, 0.15);
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Space Grotesk', monospace;
+            --radius-md: 8px;
+            --radius-lg: 12px;
         }
 
         * {
@@ -37,233 +46,312 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         body {
             background-color: var(--bg-base);
             color: var(--text-primary);
+            font-family: var(--font-main);
+            line-height: 1.45;
             min-height: 100vh;
-            padding-bottom: calc(75px + var(--safe-bottom));
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* HEADER INSTITUCIONAL */
-        .app-header {
-            position: sticky;
-            top: 0;
-            z-index: 40;
-            background: rgba(9, 13, 22, 0.92);
+        /* --- BARRA DE SINCRONIZAÇÃO --- */
+        .sync-bar {
+            background: #060910;
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 5px 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sync-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--warning);
+            transition: background 0.3s;
+        }
+
+        .sync-dot.online {
+            background: var(--success);
+            box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+        }
+
+        .sync-dot.error { background: var(--danger); }
+
+        .btn-refresh {
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.68rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-refresh:active {
+            background: var(--brass-gold-dim);
+            color: var(--brass-gold);
+        }
+
+        /* --- HEADER INSTITUCIONAL --- */
+        header {
+            background: rgba(9, 13, 22, 0.96);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-subtle);
-            padding: 0.85rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 90;
         }
 
         .header-inner {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 0.75rem 1rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
-        .identity {
+        .brand-block {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .identity-badge {
-            width: 34px;
-            height: 34px;
-            border-radius: 6px;
-            background: var(--brass-dim);
-            border: 1px solid var(--brass);
+        .brand-insignia {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
+            background: var(--brass-gold-dim);
+            border: 1px solid var(--brass-border);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--brass);
-            font-weight: 800;
-            font-size: 0.8rem;
-            letter-spacing: 0.5px;
+            color: var(--brass-gold);
+            flex-shrink: 0;
         }
 
-        .identity-text h1 {
+        .brand-meta h1 {
             font-size: 0.95rem;
             font-weight: 700;
-            letter-spacing: 0.5px;
-            color: #fff;
-            line-height: 1.15;
-        }
-
-        .identity-text p {
-            font-size: 0.68rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 500;
-        }
-
-        .badge-live {
+            color: var(--text-primary);
             display: flex;
             align-items: center;
             gap: 6px;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: var(--success);
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 0.68rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
         }
 
-        .badge-live-dot {
-            width: 6px;
-            height: 6px;
-            background: var(--success);
-            border-radius: 50%;
+        .brand-meta h1 .tag-org {
+            font-size: 0.65rem;
+            font-family: var(--font-mono);
+            color: var(--brass-gold);
+            border: 1px solid var(--brass-border);
+            padding: 1px 5px;
+            border-radius: 4px;
         }
 
-        /* CONTAINER PRINCIPAL */
-        .content-wrap {
-            max-width: 1000px;
+        .brand-meta p {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* --- NAVEGAÇÃO POR ABAS --- */
+        .nav-wrapper {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-subtle);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .nav-wrapper::-webkit-scrollbar { display: none; }
+
+        .nav-scroller {
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 1rem;
+            display: flex;
+            padding: 0.35rem 0.75rem;
+            gap: 6px;
         }
 
-        .tab-panel {
-            display: none;
-        }
-        .tab-panel.active {
-            display: block;
+        .nav-tab {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.15s;
         }
 
-        /* SEÇÕES E TÍTULOS */
+        .nav-tab svg { width: 15px; height: 15px; stroke-width: 2; }
+        .nav-tab.active {
+            background: var(--bg-card);
+            color: var(--brass-gold);
+            border-color: var(--brass-border);
+        }
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        main {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.25rem 1rem 3rem;
+            flex: 1;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         .section-header {
             display: flex;
-            align-items: baseline;
+            align-items: flex-end;
             justify-content: space-between;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--border-subtle);
         }
 
-        .section-title {
-            font-size: 0.78rem;
+        .section-header h2 {
+            font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
+            color: var(--brass-gold);
             font-weight: 700;
-            color: var(--brass);
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
-        .section-count {
+        .section-header span {
             font-size: 0.75rem;
-            color: var(--text-tertiary);
-            font-weight: 500;
-            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
         }
 
-        /* COMANDO (CARROSSEL MOBILE-FRIENDLY) */
+        /* --- CARROSSEL HORIZONTAL DO COMANDO (XERIFADO) --- */
         .command-strip {
             display: flex;
-            gap: 0.75rem;
+            gap: 10px;
             overflow-x: auto;
-            padding-bottom: 0.5rem;
+            padding-bottom: 0.85rem;
             margin-bottom: 1.5rem;
             scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
         }
         .command-strip::-webkit-scrollbar { display: none; }
 
         .command-item {
-            flex: 0 0 170px;
+            flex: 0 0 175px;
             scroll-snap-align: start;
             background: var(--bg-surface);
             border: 1px solid var(--border-subtle);
-            border-radius: 10px;
-            padding: 0.9rem 0.8rem;
-            text-align: left;
+            border-radius: var(--radius-md);
+            padding: 0.85rem 0.75rem;
             cursor: pointer;
-            transition: border-color 0.2s, transform 0.15s;
+            transition: border-color 0.2s, background-color 0.2s;
         }
 
-        .command-item:active {
-            transform: scale(0.98);
-            border-color: var(--brass);
+        .command-item:hover, .command-item:active {
+            border-color: var(--brass-gold);
+            background: var(--bg-card);
         }
 
-        .command-role-tag {
-            font-size: 0.62rem;
+        .command-rank-tag {
+            font-size: 0.65rem;
+            font-family: var(--font-mono);
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--brass);
-            background: var(--brass-dim);
-            border: 1px solid rgba(197, 160, 89, 0.3);
-            padding: 3px 6px;
+            color: var(--brass-gold);
+            background: var(--brass-gold-dim);
+            border: 1px solid var(--brass-border);
+            padding: 2px 6px;
             border-radius: 4px;
             display: inline-block;
             margin-bottom: 0.6rem;
         }
 
-        .command-name {
+        .command-item .c-name {
             font-size: 0.85rem;
             font-weight: 700;
             color: #fff;
-            margin-bottom: 2px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .command-canga {
+        .command-item .c-role {
             font-size: 0.7rem;
-            color: var(--text-secondary);
+            color: var(--text-muted);
+            margin-top: 2px;
         }
 
-        /* BUSCA E FILTROS */
-        .search-area {
-            position: sticky;
-            top: 55px;
-            z-index: 30;
-            background: var(--bg-base);
-            padding: 0.5rem 0 0.85rem 0;
+        /* --- CONTROLES DE BUSCA E FILTRO --- */
+        .controls-row {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
         }
 
-        .search-input-wrap {
+        .search-box {
             position: relative;
             width: 100%;
         }
 
-        .search-input-wrap svg {
+        .search-box svg {
             position: absolute;
-            left: 14px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-tertiary);
-            pointer-events: none;
+            width: 17px;
+            height: 17px;
+            color: var(--text-muted);
         }
 
         .search-input {
             width: 100%;
             background: var(--bg-surface);
-            border: 1px solid var(--border-medium);
-            color: #fff;
-            font-size: 0.88rem;
-            padding: 10px 14px 10px 40px;
-            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            padding: 11px 38px;
+            border-radius: var(--radius-md);
             outline: none;
             transition: border-color 0.2s;
         }
 
-        .search-input:focus {
-            border-color: var(--brass);
-            background: var(--bg-elevated);
+        .search-input:focus { border-color: var(--brass-gold); }
+
+        .clear-search-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: none;
+            padding: 4px;
         }
 
         .filter-pills {
@@ -275,215 +363,180 @@
         }
         .filter-pills::-webkit-scrollbar { display: none; }
 
-        .filter-pill {
+        .pill-btn {
             background: var(--bg-surface);
             border: 1px solid var(--border-subtle);
             color: var(--text-secondary);
-            font-size: 0.72rem;
-            padding: 5px 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 6px 12px;
             border-radius: 20px;
             white-space: nowrap;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
         }
 
-        .filter-pill.active {
-            background: var(--brass-dim);
-            border-color: var(--brass);
-            color: var(--brass-light);
+        .pill-btn.active {
+            background: var(--brass-gold-dim);
+            color: var(--brass-gold);
+            border-color: var(--brass-border);
             font-weight: 600;
         }
 
-        /* LISTA DE ALUNOS (CARDS TÁTICOS) */
+        /* --- LISTA DE ALUNOS --- */
         .students-list {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 8px;
         }
 
-        .student-row {
-            background: var(--bg-surface);
+        .student-entry {
+            background: var(--bg-card);
             border: 1px solid var(--border-subtle);
-            border-radius: 10px;
+            border-radius: var(--radius-md);
             padding: 0.85rem 1rem;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 12px;
             cursor: pointer;
-            transition: background 0.15s, border-color 0.15s;
+            transition: background-color 0.15s, border-color 0.15s;
         }
 
-        .student-row:active {
-            background: var(--bg-hover);
-            border-color: var(--brass);
+        .student-entry:active, .student-entry:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-highlight);
         }
 
-        .student-num {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--text-secondary);
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border-subtle);
-            width: 36px;
-            height: 36px;
+        .entry-left {
             display: flex;
             align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            flex-shrink: 0;
-        }
-
-        .student-main {
-            flex: 1;
+            gap: 12px;
             min-width: 0;
         }
 
-        .student-title-row {
+        .num-badge {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-subtle);
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            margin-bottom: 2px;
+            justify-content: center;
+            border-radius: 6px;
+            flex-shrink: 0;
         }
 
-        .student-war-name {
-            font-size: 0.88rem;
-            font-weight: 700;
+        .student-text { min-width: 0; }
+
+        .student-main-name {
+            font-size: 0.92rem;
+            font-weight: 600;
             color: #fff;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .role-badge-mini {
-            font-size: 0.6rem;
-            padding: 1px 5px;
-            border-radius: 3px;
-            background: var(--brass-dim);
-            color: var(--brass);
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .student-sub {
-            font-size: 0.72rem;
-            color: var(--text-secondary);
+        .student-canga-line {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 1px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .student-chips {
+        .entry-right {
             display: flex;
-            gap: 6px;
             align-items: center;
+            gap: 8px;
             flex-shrink: 0;
         }
 
-        .chip {
-            font-size: 0.68rem;
-            font-weight: 600;
-            padding: 3px 7px;
-            border-radius: 5px;
-            font-family: 'JetBrains Mono', monospace;
+        .tag-pill {
+            font-size: 0.65rem;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            padding: 3px 6px;
+            border-radius: 4px;
         }
 
-        .chip-rh {
-            background: var(--danger-dim);
-            color: #fca5a5;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
+        .tag-pill.rh { background: var(--danger-bg); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.25); }
+        .tag-pill.cnh { background: var(--brass-gold-dim); color: var(--brass-gold); border: 1px solid var(--brass-border); }
 
-        .chip-cnh {
-            background: rgba(59, 130, 246, 0.1);
-            color: #93c5fd;
-            border: 1px solid rgba(59, 130, 246, 0.25);
-        }
+        .chevron-icon { color: var(--text-muted); width: 18px; height: 18px; }
 
-        .chip-faltas-zero {
-            background: var(--success-dim);
-            color: #6ee7b7;
-        }
-
-        .chip-faltas-warn {
-            background: var(--warning-dim);
-            color: #fcd34d;
-        }
-
-        .row-arrow {
-            color: var(--text-tertiary);
-            flex-shrink: 0;
-        }
-
-        /* ================= BOTTOM SHEET / MODAL MOBILE ================= */
-        .sheet-overlay {
+        /* --- MODAL / BOTTOM SHEET --- */
+        .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(4px);
-            z-index: 100;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.25s ease, visibility 0.25s ease;
-            display: flex;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
+            z-index: 200;
+            display: none;
             align-items: flex-end;
             justify-content: center;
         }
 
-        .sheet-overlay.open {
-            opacity: 1;
-            visibility: visible;
-        }
+        .modal-overlay.open { display: flex; animation: overlayIn 0.2s ease; }
+        @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .sheet-modal {
-            background: var(--bg-surface);
-            border-top: 1px solid var(--border-medium);
+        .dossier-sheet {
             width: 100%;
-            max-width: 550px;
-            border-radius: 18px 18px 0 0;
-            transform: translateY(100%);
-            transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 600px;
+            background: #0d1526;
+            border-top: 1px solid var(--brass-border);
+            border-left: 1px solid var(--border-subtle);
+            border-right: 1px solid var(--border-subtle);
+            border-radius: 16px 16px 0 0;
+            padding: 1.25rem 1.25rem 2.2rem;
             max-height: 88vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7);
+            overflow-y: auto;
+            animation: sheetUp 0.25s cubic-bezier(0.2, 0.9, 0.3, 1);
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
         }
 
-        .sheet-overlay.open .sheet-modal {
-            transform: translateY(0);
+        @media (min-width: 641px) {
+            .modal-overlay { align-items: center; padding: 1.5rem; }
+            .dossier-sheet {
+                border-radius: var(--radius-lg);
+                border: 1px solid var(--brass-border);
+                max-height: 85vh;
+                padding: 1.5rem;
+            }
         }
+
+        @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
         .sheet-drag-handle {
             width: 38px;
             height: 4px;
-            background: var(--border-medium);
-            border-radius: 10px;
-            margin: 10px auto 4px;
+            background: var(--text-muted);
+            opacity: 0.5;
+            border-radius: 2px;
+            margin: -0.25rem auto 1rem;
         }
 
-        .sheet-header {
-            padding: 0.8rem 1.25rem;
+        .sheet-top {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid var(--border-subtle);
+            align-items: flex-start;
+            margin-bottom: 1.25rem;
         }
 
-        .sheet-header h3 {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--brass);
-            font-weight: 700;
-        }
+        .sheet-identity h3 { font-size: 1.15rem; font-weight: 700; color: #fff; }
+        .sheet-identity p { font-size: 0.8rem; color: var(--brass-gold); font-weight: 600; margin-top: 2px; }
 
         .sheet-close-btn {
-            background: rgba(255, 255, 255, 0.06);
-            border: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
             color: var(--text-secondary);
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -491,1023 +544,785 @@
             cursor: pointer;
         }
 
-        .sheet-body {
-            padding: 1.25rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1.1rem;
-            padding-bottom: calc(1.5rem + var(--safe-bottom));
-        }
-
-        .profile-hero {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            background: var(--bg-elevated);
-            padding: 1rem;
-            border-radius: 10px;
-            border: 1px solid var(--border-subtle);
-        }
-
-        .profile-num-box {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
-            background: var(--brass-dim);
-            border: 1px solid var(--brass);
-            color: var(--brass);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.2rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .profile-titles h2 {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #fff;
-            line-height: 1.2;
-        }
-
-        .profile-full-name {
-            font-size: 0.78rem;
-            color: var(--text-secondary);
-            margin-top: 2px;
-        }
-
         .info-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
+            gap: 10px;
+            margin-bottom: 1.25rem;
         }
 
-        .info-card {
-            background: rgba(255, 255, 255, 0.02);
+        .info-cell {
+            background: var(--bg-surface);
             border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            padding: 0.75rem 0.85rem;
         }
 
-        .info-card.span-2 {
-            grid-column: span 2;
-        }
-
-        .info-label {
+        .info-cell.full-width { grid-column: span 2; }
+        .info-cell .cell-title {
             font-size: 0.65rem;
+            font-family: var(--font-mono);
+            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-tertiary);
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .info-cell .cell-data {
+            font-size: 0.86rem;
             font-weight: 600;
-            margin-bottom: 4px;
+            color: var(--text-primary);
+            word-break: break-word;
         }
 
-        .info-value {
-            font-size: 0.88rem;
-            color: #fff;
-            font-weight: 500;
-        }
-
-        .info-value.canga-link {
-            color: var(--brass);
+        .cell-data.highlight-rh { color: #f87171; font-family: var(--font-mono); font-weight: 700; }
+        .cell-data.canga-clickable {
+            color: var(--brass-gold);
             cursor: pointer;
             text-decoration: underline;
             text-underline-offset: 3px;
         }
 
-        .quick-action-link {
-            display: inline-flex;
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .action-call-btn {
+            display: flex;
             align-items: center;
-            gap: 6px;
-            color: var(--brass);
-            font-size: 0.75rem;
+            justify-content: center;
+            gap: 8px;
+            background: var(--brass-gold-dim);
+            border: 1px solid var(--brass-border);
+            color: var(--brass-gold);
+            padding: 11px 14px;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
             font-weight: 600;
             text-decoration: none;
-            margin-top: 4px;
-            background: var(--brass-dim);
-            padding: 4px 8px;
-            border-radius: 4px;
         }
 
-        /* --- ABA: MATÉRIAS --- */
-        .materias-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
+        .action-call-btn.emergency {
+            background: var(--danger-bg);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
         }
 
-        .materia-box {
-            background: var(--bg-surface);
+        /* --- ABA MATÉRIAS --- */
+        .subjects-stack { display: flex; flex-direction: column; gap: 10px; }
+        .subject-card {
+            background: var(--bg-card);
             border: 1px solid var(--border-subtle);
-            border-radius: 10px;
+            border-radius: var(--radius-md);
             padding: 1rem;
         }
-
-        .materia-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 4px;
-        }
-
-        .materia-tag {
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--brass);
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .materia-hours {
+        .subject-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+        .subject-head h3 { font-size: 0.95rem; font-weight: 700; color: #fff; }
+        .subject-hours {
             font-size: 0.7rem;
-            color: var(--text-tertiary);
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .materia-title {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 6px;
-        }
-
-        .materia-desc {
-            font-size: 0.78rem;
-            color: var(--text-secondary);
-            line-height: 1.4;
-            margin-bottom: 0.9rem;
-        }
-
-        .materia-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn-action {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-medium);
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .btn-action:active {
-            border-color: var(--brass);
-            background: var(--brass-dim);
-            color: var(--brass-light);
-        }
-
-        /* --- ABA: AVISOS --- */
-        .avisos-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .aviso-card {
-            background: var(--bg-surface);
-            border-left: 3px solid var(--brass);
-            border-radius: 0 10px 10px 0;
-            border-top: 1px solid var(--border-subtle);
-            border-right: 1px solid var(--border-subtle);
-            border-bottom: 1px solid var(--border-subtle);
-            padding: 1rem;
-        }
-
-        .aviso-card.prioridade {
-            border-left-color: var(--danger);
-        }
-
-        .aviso-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-
-        .aviso-badge {
-            font-size: 0.62rem;
-            font-weight: 700;
-            text-transform: uppercase;
+            font-family: var(--font-mono);
+            color: var(--brass-gold);
+            background: var(--brass-gold-dim);
             padding: 2px 6px;
-            border-radius: 3px;
+            border-radius: 4px;
+            border: 1px solid var(--brass-border);
         }
-
-        .aviso-badge.red { background: var(--danger-dim); color: #fca5a5; }
-        .aviso-badge.brass { background: var(--brass-dim); color: var(--brass); }
-
-        .aviso-time {
-            font-size: 0.68rem;
-            color: var(--text-tertiary);
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .aviso-title {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 4px;
-        }
-
-        .aviso-text {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            line-height: 1.45;
-        }
-
-        /* --- ABA: COORDENAÇÃO --- */
-        .coord-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .coord-card {
+        .subject-desc { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.85rem; line-height: 1.4; }
+        .subject-actions { display: flex; gap: 8px; }
+        .sub-btn {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-primary);
             background: var(--bg-surface);
             border: 1px solid var(--border-subtle);
-            border-radius: 10px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+
+        /* --- ABA AVISOS --- */
+        .bulletin-stack { display: flex; flex-direction: column; gap: 10px; }
+        .bulletin-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-left: 3px solid var(--brass-gold);
+            border-radius: var(--radius-md);
             padding: 1rem;
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
         }
+        .bulletin-card.urgent { border-left-color: var(--danger); }
+        .bulletin-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .bulletin-badge { font-size: 0.65rem; font-family: var(--font-mono); font-weight: 700; color: var(--brass-gold); }
+        .bulletin-card.urgent .bulletin-badge { color: var(--danger); }
+        .bulletin-date { font-size: 0.7rem; color: var(--text-muted); }
+        .bulletin-title { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .bulletin-text { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.45; }
 
-        .coord-avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 8px;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-medium);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--brass);
-            flex-shrink: 0;
-            font-weight: 700;
-            font-size: 0.85rem;
-        }
+        /* --- ABA COORDENAÇÃO --- */
+        .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+        .staff-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem; }
+        .staff-role-badge { font-size: 0.65rem; font-family: var(--font-mono); color: var(--brass-gold); text-transform: uppercase; margin-bottom: 4px; font-weight: 700; }
+        .staff-name { font-size: 0.92rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
+        .staff-desc { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; }
 
-        .coord-body h3 {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .coord-post {
-            font-size: 0.72rem;
-            color: var(--brass);
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .coord-detail {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            line-height: 1.35;
-        }
-
-        /* ================= BOTTOM NAVIGATION BAR (MOBILE NATIVE FEEL) ================= */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(9, 13, 22, 0.95);
-            backdrop-filter: blur(15px);
+        /* --- FOOTER --- */
+        footer {
             border-top: 1px solid var(--border-subtle);
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            padding: 6px 4px calc(6px + var(--safe-bottom));
-            z-index: 50;
-        }
-
-        .nav-btn {
-            background: none;
-            border: none;
-            color: var(--text-tertiary);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            padding: 6px 0;
-            cursor: pointer;
-            transition: color 0.15s;
-        }
-
-        .nav-btn svg {
-            width: 20px;
-            height: 20px;
-            stroke-width: 2;
-        }
-
-        .nav-btn span {
-            font-size: 0.65rem;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-
-        .nav-btn.active {
-            color: var(--brass);
-        }
-
-        /* DESKTOP MEDIA QUERY */
-        @media (min-width: 768px) {
-            body {
-                padding-bottom: 3rem;
-            }
-
-            /* No desktop o Bottom Bar sobe para o Header */
-            .bottom-nav {
-                position: static;
-                display: flex;
-                background: none;
-                border: none;
-                padding: 0;
-                gap: 6px;
-            }
-
-            .nav-btn {
-                flex-direction: row;
-                gap: 6px;
-                padding: 6px 14px;
-                border-radius: 6px;
-                border: 1px solid transparent;
-            }
-
-            .nav-btn.active {
-                background: var(--brass-dim);
-                border-color: var(--brass);
-            }
-
-            .nav-btn span {
-                font-size: 0.75rem;
-            }
-
-            .command-strip {
-                display: grid;
-                grid-template-columns: repeat(5, 1fr);
-                overflow-x: visible;
-            }
-
-            .command-item {
-                flex: auto;
-            }
-
-            /* No desktop o modal centraliza na tela */
-            .sheet-overlay {
-                align-items: center;
-            }
-
-            .sheet-modal {
-                border-radius: 14px;
-                transform: scale(0.96);
-                transition: transform 0.2s ease;
-            }
-
-            .sheet-overlay.open .sheet-modal {
-                transform: scale(1);
-            }
-
-            .sheet-drag-handle { display: none; }
+            padding: 1.25rem 1rem;
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
         }
     </style>
 </head>
 <body>
 
+    <!-- BARRA DE STATUS DA PLANILHA GOOGLE -->
+    <div class="sync-bar">
+        <div class="sync-status">
+            <span class="sync-dot" id="sync-dot"></span>
+            <span id="sync-text">Conectando ao Google Sheets...</span>
+        </div>
+        <button class="btn-refresh" onclick="fetchSpreadsheetData()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            Atualizar
+        </button>
+    </div>
+
     <!-- CABEÇALHO -->
-    <header class="app-header">
+    <header>
         <div class="header-inner">
-            <div class="identity">
-                <div class="identity-badge">PC</div>
-                <div class="identity-text">
-                    <h1>CFP PCRR 2026</h1>
-                    <p>Corpo de Alunos • 1º Pelotão</p>
+            <div class="brand-block">
+                <div class="brand-insignia">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <div class="brand-meta">
+                    <h1>TURMA BRAVO <span class="tag-org">PCRR</span></h1>
+                    <p>CFP 2026 • 49 Alunos</p>
                 </div>
             </div>
-
-            <!-- DESKTOP NAV (Oculto em mobile) -->
-            <nav class="bottom-nav" id="main-nav">
-                <button class="nav-btn active" onclick="navigate('alunos')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                    <span>Alunos</span>
-                </button>
-                <button class="nav-btn" onclick="navigate('materias')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                    <span>Matérias</span>
-                </button>
-                <button class="nav-btn" onclick="navigate('avisos')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                    <span>Avisos</span>
-                </button>
-                <button class="nav-btn" onclick="navigate('coord')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                    <span>Comando</span>
-                </button>
-            </nav>
+            <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--brass-gold);">
+                EFETIVO OFICIAL
+            </div>
         </div>
     </header>
 
-    <main class="content-wrap">
+    <!-- ABAS DE NAVEGAÇÃO -->
+    <div class="nav-wrapper">
+        <div class="nav-scroller">
+            <button class="nav-tab active" onclick="navigate('alunos')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Alunos & Comando
+            </button>
+            <button class="nav-tab" onclick="navigate('materias')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                Matérias
+            </button>
+            <button class="nav-tab" onclick="navigate('avisos')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                Avisos
+            </button>
+            <button class="nav-tab" onclick="navigate('coord')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                Coordenação
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
 
         <!-- ================= ABA 1: ALUNOS & COMANDO ================= -->
-        <section id="tab-alunos" class="tab-panel active">
+        <section id="tab-alunos" class="tab-content active">
             
-            <!-- COMANDO EM DESTAQUE -->
             <div class="section-header">
-                <span class="section-title">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    Xerifado
-                </span>
+                <h2>Cadeia de Comando</h2>
+                <span>Xerifado da Turma</span>
             </div>
 
             <div class="command-strip" id="command-strip">
-                <!-- Preenchido via JS -->
+                <!-- Preenchido automaticamente -->
             </div>
 
-            <!-- PESQUISA E FILTROS -->
-            <div class="search-area">
-                <div class="search-input-wrap">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <input type="text" id="search-input" class="search-input" placeholder="Buscar aluno por nome, canga ou número...">
+            <div class="section-header">
+                <h2>Efetivo de Alunos</h2>
+                <span id="student-total-label">49 Alunos</span>
+            </div>
+
+            <div class="controls-row">
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="search-input" class="search-input" placeholder="Buscar por nome, canga ou CNH...">
+                    <button class="clear-search-btn" id="clear-search-btn" onclick="clearSearch()">✕</button>
                 </div>
 
                 <div class="filter-pills">
-                    <button class="filter-pill active" onclick="applyFilter('all', this)">Todos</button>
-                    <button class="filter-pill" onclick="applyFilter('comando', this)">Xerifado</button>
-                    <button class="filter-pill" onclick="applyFilter('zero-faltas', this)">100% Presença</button>
-                    <button class="filter-pill" onclick="applyFilter('com-faltas', this)">Com Faltas</button>
+                    <button class="pill-btn active" onclick="applyFilter('todos', this)">Todos (49)</button>
+                    <button class="pill-btn" onclick="applyFilter('comando', this)">Xerifado</button>
+                    <button class="pill-btn" onclick="applyFilter('rh_o', this)">Sangue O</button>
+                    <button class="pill-btn" onclick="applyFilter('rh_a', this)">Sangue A</button>
                 </div>
             </div>
 
-            <!-- LISTAGEM DE ALUNOS -->
-            <div class="section-header" style="margin-top: 0.5rem;">
-                <span class="section-title">Relação Nominal</span>
-                <span class="section-count" id="count-display">0 efetivo</span>
-            </div>
-
             <div class="students-list" id="students-list">
-                <!-- Preenchido via JS -->
+                <!-- Preenchido automaticamente via Planilha -->
             </div>
         </section>
 
         <!-- ================= ABA 2: MATÉRIAS ================= -->
-        <section id="tab-materias" class="tab-panel">
+        <section id="tab-materias" class="tab-content">
             <div class="section-header">
-                <span class="section-title">Disciplinas da Matriz Curricular</span>
-                <span class="section-count">6 Módulos</span>
+                <h2>Grade Curricular & Arquivos</h2>
+                <span>Módulos Ativos</span>
             </div>
 
-            <div class="materias-list">
-                <div class="materia-box">
-                    <div class="materia-top">
-                        <span class="materia-tag">MOD-01 • OPERACIONAL</span>
-                        <span class="materia-hours">60h/a</span>
+            <div class="subjects-stack">
+                <div class="subject-card">
+                    <div class="subject-head">
+                        <h3>Armamento, Munição e Tiro Policial</h3>
+                        <span class="subject-hours">80h/aula</span>
                     </div>
-                    <h3 class="materia-title">Armamento, Munição e Tiro Policial</h3>
-                    <p class="materia-desc">Fundamentos do tiro defensivo, manuseio de pistola semiautomática, resolução de panes e posições de tiro tático sob estresse.</p>
-                    <div class="materia-actions">
-                        <button class="btn-action" onclick="alert('Download da Apostila oficial (PDF)')">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                            Apostila (PDF)
-                        </button>
-                        <button class="btn-action" onclick="alert('Slides da aula abertos')">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                            Slides
-                        </button>
+                    <p class="subject-desc">Fundamentos do tiro defensivo, manuseio seguro de pistola, panes e tiro em ambiente de baixa luminosidade.</p>
+                    <div class="subject-actions">
+                        <a href="javascript:void(0)" class="sub-btn">Plano de Aula</a>
+                        <a href="javascript:void(0)" class="sub-btn">Apostila PDF</a>
                     </div>
                 </div>
 
-                <div class="materia-box">
-                    <div class="materia-top">
-                        <span class="materia-tag">MOD-02 • INVESTIGAÇÃO</span>
-                        <span class="materia-hours">80h/a</span>
+                <div class="subject-card">
+                    <div class="subject-head">
+                        <h3>Investigação Policial & Inteligência</h3>
+                        <span class="subject-hours">60h/aula</span>
                     </div>
-                    <h3 class="materia-title">Técnicas de Investigação e Inteligência Policial</h3>
-                    <p class="materia-desc">Cadeia de custódia, preservação de local de crime, relatórios técnicos de inteligência e técnicas de oitiva de testemunhas.</p>
-                    <div class="materia-actions">
-                        <button class="btn-action" onclick="alert('Download da Apostila oficial (PDF)')">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                            Apostila (PDF)
-                        </button>
+                    <p class="subject-desc">Metodologia investigativa, local de crime, cadeia de custódia, análise de vínculos e relatórios técnicos.</p>
+                    <div class="subject-actions">
+                        <a href="javascript:void(0)" class="sub-btn">Manual Técnico</a>
                     </div>
                 </div>
 
-                <div class="materia-box">
-                    <div class="materia-top">
-                        <span class="materia-tag">MOD-03 • TÁTICO</span>
-                        <span class="materia-hours">40h/a</span>
+                <div class="subject-card">
+                    <div class="subject-head">
+                        <h3>Abordagem Policial e CQB</h3>
+                        <span class="subject-hours">50h/aula</span>
                     </div>
-                    <h3 class="materia-title">Abordagem Policial e Combate em Recinto Fechado (CQB)</h3>
-                    <p class="materia-desc">Doutrina de varredura tática, progressão veicular, algemamento, condução de custodiados e sobrevivência policial.</p>
-                    <div class="materia-actions">
-                        <button class="btn-action" onclick="alert('Download da Apostila oficial (PDF)')">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                            Manual (PDF)
-                        </button>
+                    <p class="subject-desc">Progressão veicular, intervenção em recintos confinados e uso escalonado da força policial.</p>
+                    <div class="subject-actions">
+                        <a href="javascript:void(0)" class="sub-btn">Slides Teóricos</a>
                     </div>
                 </div>
 
-                <div class="materia-box">
-                    <div class="materia-top">
-                        <span class="materia-tag">MOD-04 • MÉDICO-TÁTICO</span>
-                        <span class="materia-hours">30h/a</span>
+                <div class="subject-card">
+                    <div class="subject-head">
+                        <h3>Atendimento Pré-Hospitalar Tático (APH)</h3>
+                        <span class="subject-hours">40h/aula</span>
                     </div>
-                    <h3 class="materia-title">Atendimento Pré-Hospitalar Tático (APH Tático)</h3>
-                    <p class="materia-desc">Protocolo MARC 1 policial, contenção de hemorragias massivas com torniquete, curativos compressivos e transporte de feridos sob fogo.</p>
-                    <div class="materia-actions">
-                        <button class="btn-action" onclick="alert('Download do Protocolo MARC 1')">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                            Guia de Campo (PDF)
-                        </button>
+                    <p class="subject-desc">Protocolo MARC 1 policial, torniquetes, curativos de combate e extração de feridos sob fogo.</p>
+                    <div class="subject-actions">
+                        <a href="javascript:void(0)" class="sub-btn">Protocolo MARC 1</a>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- ================= ABA 3: AVISOS ================= -->
-        <section id="tab-avisos" class="tab-panel">
+        <section id="tab-avisos" class="tab-content">
             <div class="section-header">
-                <span class="section-title">Ordens de Serviço e Boletins</span>
-                <span class="section-count">3 ativos</span>
+                <h2>Quadro Oficial de Ordens</h2>
+                <span>Boletins Diários</span>
             </div>
 
-            <div class="avisos-list">
-                <div class="aviso-card prioridade">
-                    <div class="aviso-header">
-                        <span class="aviso-badge red">Urgente • Instrução</span>
-                        <span class="aviso-time">Hoje às 06:45</span>
+            <div class="bulletin-stack">
+                <div class="bulletin-card urgent">
+                    <div class="bulletin-meta">
+                        <span class="bulletin-badge">URGENTE • INSTRUÇÃO EXTERNA</span>
+                        <span class="bulletin-date">Hoje, 06:40</span>
                     </div>
-                    <h4 class="aviso-title">Apresentação para o Estande de Tiro</h4>
-                    <p class="aviso-text">Formatura geral no pátio às 07h00 sem atrasos. Todos os alunos devem portar coldre rígido, cinto tático, óculos de proteção balística e protetor auricular tipo concha. Inspeção pelo S3 antes do embarque.</p>
+                    <h3 class="bulletin-title">Formatura no Estande e Inspeção de EPI</h3>
+                    <p class="bulletin-text">Apresentação obrigatória às 07h00 no pátio do estande. Traje: 3º R (Operacional com coturno engraxado). Óculos de proteção balística e abafador auricular concha são itens eliminatórios para entrada na linha de tiro.</p>
                 </div>
 
-                <div class="aviso-card">
-                    <div class="aviso-header">
-                        <span class="aviso-badge brass">Administrativo</span>
-                        <span class="aviso-time">Ontem às 19:15</span>
+                <div class="bulletin-card">
+                    <div class="bulletin-meta">
+                        <span class="bulletin-badge">SEÇÃO S1 • PESSOAL</span>
+                        <span class="bulletin-date">Ontem, 19:20</span>
                     </div>
-                    <h4 class="aviso-title">Recolhimento de Documentação pelo S1</h4>
-                    <p class="aviso-text">Todos os alunos com pendência na categoria de CNH ou atestados médicos devem entregar as vias autenticadas ao Aluno S1 até o término do expediente de hoje.</p>
-                </div>
-
-                <div class="aviso-card">
-                    <div class="aviso-header">
-                        <span class="aviso-badge brass">Educação Física</span>
-                        <span class="aviso-time">02/09 às 14:00</span>
-                    </div>
-                    <h4 class="aviso-title">Treinamento Físico Militar (TFM)</h4>
-                    <p class="aviso-text">Corrida contínua e pista de obstáculos às 06h00. É dever de cada canga zelar pela hidratação mútua e integridade física de sua dupla.</p>
+                    <h3 class="bulletin-title">Atualização dos Contatos de Emergência</h3>
+                    <p class="bulletin-text">Todos os alunos com pendência cadastral na CNH ou comprovante de tipagem sanguínea devem apresentar cópia autenticada ao S1 até o término do expediente desta sexta-feira.</p>
                 </div>
             </div>
         </section>
 
         <!-- ================= ABA 4: COORDENAÇÃO ================= -->
-        <section id="tab-coord" class="tab-panel">
+        <section id="tab-coord" class="tab-content">
             <div class="section-header">
-                <span class="section-title">Corpo Diretivo e Instrutores</span>
-                <span class="section-count">Academia de Polícia</span>
+                <h2>Corpo Diretivo & Instrutores</h2>
+                <span>ACADEPOL</span>
             </div>
 
-            <div class="coord-list">
-                <div class="coord-card">
-                    <div class="coord-avatar">DIR</div>
-                    <div class="coord-body">
-                        <h3>Dr. Carlos Eduardo Menezes</h3>
-                        <div class="coord-post">Delegado de Polícia • Diretor da Academia</div>
-                        <p class="coord-detail">Supervisão geral do CFP, diretrizes disciplinares e relacionamento institucional com a Delegacia-Geral.</p>
-                    </div>
+            <div class="staff-grid">
+                <div class="staff-card">
+                    <div class="staff-role-badge">Diretor da Academia</div>
+                    <h3 class="staff-name">Dr. Carlos Eduardo Menezes</h3>
+                    <p class="staff-desc">Delegado de Classe Especial. Gestão estratégica institucional, plano diretor de ensino e regulamento disciplinar do curso.</p>
                 </div>
 
-                <div class="coord-card">
-                    <div class="coord-avatar">CD</div>
-                    <div class="coord-body">
-                        <h3>Dr. Fernando Bastos</h3>
-                        <div class="coord-post">Delegado de Polícia • Coordenador do CFP</div>
-                        <p class="coord-detail">Coordenação pedagógica direta do curso, matriz curricular e gestão dos quadros de instrutores.</p>
-                    </div>
+                <div class="staff-card">
+                    <div class="staff-role-badge">Coordenador do CFP</div>
+                    <h3 class="staff-name">Dr. Fernando Bastos</h3>
+                    <p class="staff-desc">Delegado de Polícia. Supervisão direta da rotina pedagógica, alinhamento de instrutores e controle de assiduidade dos pelotões.</p>
                 </div>
 
-                <div class="coord-card">
-                    <div class="coord-avatar">INS</div>
-                    <div class="coord-body">
-                        <h3>Roberto Silveira</h3>
-                        <div class="coord-post">Inspetor de Polícia • Chefe de Instrução Tática</div>
-                        <p class="coord-detail">Responsável pelos módulos de armamento, tiro policial, defesa pessoal tática e intervenções táticas.</p>
-                    </div>
+                <div class="staff-card">
+                    <div class="staff-role-badge">Chefe da Instrução Tática</div>
+                    <h3 class="staff-name">Insp. Roberto Silveira</h3>
+                    <p class="staff-desc">Comandante dos módulos práticos operacionais, armamento, tiro policial, entradas táticas e sobrevivência policial.</p>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <!-- ================= BOTTOM SHEET: DOSSIÊ DO ALUNO ================= -->
-    <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet(event)">
-        <div class="sheet-modal" id="sheet-modal">
+    <!-- ================= DOSSIÊ COMPLETO DO ALUNO (BOTTOM SHEET) ================= -->
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
+        <div class="dossier-sheet" id="dossier-sheet">
             <div class="sheet-drag-handle"></div>
-            
-            <div class="sheet-header">
-                <h3>Dossiê Cadastral</h3>
-                <button class="sheet-close-btn" onclick="hideSheet()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
+
+            <div class="sheet-top">
+                <div class="sheet-identity">
+                    <h3 id="d-nome-guerra">NOME DE GUERRA</h3>
+                    <p id="d-funcao">TURMA BRAVO • CFP PCRR 2026</p>
+                </div>
+                <button class="sheet-close-btn" onclick="closeModal()">✕</button>
             </div>
 
-            <div class="sheet-body">
-                <!-- HERO DO ALUNO -->
-                <div class="profile-hero">
-                    <div class="profile-num-box" id="p-num">00</div>
-                    <div class="profile-titles">
-                        <h2 id="p-guerra">NOME DE GUERRA</h2>
-                        <div class="profile-full-name" id="p-nome">Nome Completo do Aluno</div>
-                    </div>
+            <div class="info-grid">
+                <div class="info-cell full-width">
+                    <div class="cell-title">Nome Completo</div>
+                    <div class="cell-data" id="d-nome-completo">-</div>
                 </div>
 
-                <!-- GRADE DE DADOS TÁTICOS -->
-                <div class="info-grid">
-                    <div class="info-card">
-                        <div class="info-label">Fator RH / Sangue</div>
-                        <div class="info-value" style="color: #f87171; font-weight: 700;" id="p-rh">O+</div>
-                    </div>
-
-                    <div class="info-card">
-                        <div class="info-label">Categoria CNH</div>
-                        <div class="info-value" id="p-cnh">AB</div>
-                    </div>
-
-                    <div class="info-card">
-                        <div class="info-label">Canga de Instrução</div>
-                        <div class="info-value canga-link" id="p-canga" title="Toque para ver o canga">-</div>
-                    </div>
-
-                    <div class="info-card">
-                        <div class="info-label">Faltas Registradas</div>
-                        <div class="info-value" id="p-faltas">0</div>
-                    </div>
-
-                    <div class="info-card span-2">
-                        <div class="info-label">Telefone Direto</div>
-                        <div class="info-value" id="p-tel">-</div>
-                        <a href="#" id="p-tel-link" class="quick-action-link">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                            Fazer Ligação
-                        </a>
-                    </div>
-
-                    <div class="info-card span-2">
-                        <div class="info-label">Contato de Emergência</div>
-                        <div class="info-value" id="p-emergencia">-</div>
-                    </div>
-
-                    <div class="info-card span-2">
-                        <div class="info-label">Endereço Residencial</div>
-                        <div class="info-value" id="p-endereco">-</div>
-                        <a href="#" id="p-maps-link" target="_blank" class="quick-action-link">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>
-                            Ver no Maps
-                        </a>
-                    </div>
+                <div class="info-cell">
+                    <div class="cell-title">Canga de Instrução</div>
+                    <div class="cell-data canga-clickable" id="d-canga" title="Toque para abrir o perfil do canga">-</div>
                 </div>
+
+                <div class="info-cell">
+                    <div class="cell-title">Fator RH (Sangue)</div>
+                    <div class="cell-data highlight-rh" id="d-rh">-</div>
+                </div>
+
+                <div class="info-cell">
+                    <div class="cell-title">Tipo de CNH</div>
+                    <div class="cell-data" id="d-cnh">-</div>
+                </div>
+
+                <div class="info-cell">
+                    <div class="cell-title">Data de Nascimento</div>
+                    <div class="cell-data" id="d-nascimento">-</div>
+                </div>
+
+                <div class="info-cell">
+                    <div class="cell-title">CPF</div>
+                    <div class="cell-data" id="d-cpf">-</div>
+                </div>
+
+                <div class="info-cell">
+                    <div class="cell-title">RG</div>
+                    <div class="cell-data" id="d-rg">-</div>
+                </div>
+
+                <div class="info-cell full-width">
+                    <div class="cell-title">Matrícula VUNESP</div>
+                    <div class="cell-data" id="d-vunesp">-</div>
+                </div>
+
+                <div class="info-cell full-width">
+                    <div class="cell-title">Telefone Direto</div>
+                    <div class="cell-data" id="d-telefone">-</div>
+                </div>
+
+                <div class="info-cell full-width">
+                    <div class="cell-title">Contato de Emergência</div>
+                    <div class="cell-data" id="d-emergencia">-</div>
+                </div>
+
+                <div class="info-cell full-width">
+                    <div class="cell-title">Endereço Residencial</div>
+                    <div class="cell-data" id="d-endereco">-</div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <a href="#" id="call-student-btn" class="action-call-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    Ligar para o Aluno
+                </a>
+                <a href="#" id="call-emerg-btn" class="action-call-btn emergency">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <span id="label-call-emerg">Ligar para Emergência</span>
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT DA APLICAÇÃO -->
+    <!-- RODAPÉ TÉCNICO -->
+    <footer>
+        ACADEPOL/PCRR • TURMA BRAVO (49 ALUNOS) • CFP 2026
+    </footer>
+
+    <!-- LÓGICA DE INTEGRAÇÃO COM A PLANILHA DO GOOGLE -->
     <script>
-        // BASE DE DADOS DOS ALUNOS
-        const alunos = [
-            {
-                id: 1,
-                numero: "01",
-                guerra: "ALMEIDA",
-                nomeCompleto: "Marcos Vinicius de Almeida",
-                role: "XERIFE",
-                isComando: true,
-                cnh: "AB",
-                cangaGuerra: "CARVALHO",
-                rh: "O+",
-                telefone: "(95) 98101-1001",
-                emergencia: "Helena Almeida (Esposa) - (95) 99111-2233",
-                endereco: "Rua das Flores, 142, Bairro dos Estados, Boa Vista - RR",
-                faltas: 0
-            },
-            {
-                id: 2,
-                numero: "02",
-                guerra: "CARVALHO",
-                nomeCompleto: "Felipe Carvalho Duarte",
-                role: "SUB-XERIFE",
-                isComando: true,
-                cnh: "AD",
-                cangaGuerra: "ALMEIDA",
-                rh: "A+",
-                telefone: "(95) 98102-1002",
-                emergencia: "Maria Carvalho (Mãe) - (95) 99122-3344",
-                endereco: "Av. Ville Roy, 5800, Caçari, Boa Vista - RR",
-                faltas: 0
-            },
-            {
-                id: 3,
-                numero: "03",
-                guerra: "SOUZA",
-                nomeCompleto: "Guilherme de Souza Rocha",
-                role: "S1 PESSOAL",
-                isComando: true,
-                cnh: "B",
-                cangaGuerra: "LIMA",
-                rh: "B+",
-                telefone: "(95) 98103-1003",
-                emergencia: "Beatriz Rocha (Irmã) - (95) 99133-4455",
-                endereco: "Rua Coronel Mota, 310, Centro, Boa Vista - RR",
-                faltas: 1
-            },
-            {
-                id: 4,
-                numero: "04",
-                guerra: "LIMA",
-                nomeCompleto: "Thiago Lima Fontenele",
-                role: "S2 AUX. INSTRUÇÃO",
-                isComando: true,
-                cnh: "AB",
-                cangaGuerra: "SOUZA",
-                rh: "O-",
-                telefone: "(95) 98104-1004",
-                emergencia: "Clara Lima (Mãe) - (95) 99144-5566",
-                endereco: "Rua Cecília Meireles, 89, Paraviana, Boa Vista - RR",
-                faltas: 0
-            },
-            {
-                id: 5,
-                numero: "05",
-                guerra: "RODRIGUES",
-                nomeCompleto: "Lucas Rodrigues Pereira",
-                role: "S3 CHECK DE ABANDONO",
-                isComando: true,
-                cnh: "AE",
-                cangaGuerra: "BARBOSA",
-                rh: "AB+",
-                telefone: "(95) 98105-1005",
-                emergencia: "Patricia Rodrigues (Esposa) - (95) 99155-6677",
-                endereco: "Av. Brigadeiro Eduardo Gomes, 1204, Aeroporto, Boa Vista - RR",
-                faltas: 0
-            },
-            {
-                id: 6,
-                numero: "06",
-                guerra: "BARBOSA",
-                nomeCompleto: "Renato Barbosa Cavalcante",
-                role: null,
-                isComando: false,
-                cnh: "B",
-                cangaGuerra: "RODRIGUES",
-                rh: "O+",
-                telefone: "(95) 98106-1006",
-                emergencia: "Carlos Barbosa (Pai) - (95) 99166-7788",
-                endereco: "Rua Alfredo Cruz, 240, Centro, Boa Vista - RR",
-                faltas: 2
-            },
-            {
-                id: 7,
-                numero: "07",
-                guerra: "NASCIMENTO",
-                nomeCompleto: "Rodrigo Nascimento Silva",
-                role: null,
-                isComando: false,
-                cnh: "AB",
-                cangaGuerra: "MENDES",
-                rh: "A-",
-                telefone: "(95) 98107-1007",
-                emergencia: "Juliana Silva (Irmã) - (95) 99177-8899",
-                endereco: "Rua Major Manoel Correia, 45, São Francisco, Boa Vista - RR",
-                faltas: 0
-            },
-            {
-                id: 8,
-                numero: "08",
-                guerra: "MENDES",
-                nomeCompleto: "Camila Mendes de Oliveira",
-                role: null,
-                isComando: false,
-                cnh: "B",
-                cangaGuerra: "NASCIMENTO",
-                rh: "B-",
-                telefone: "(95) 98108-1008",
-                emergencia: "Roberto Mendes (Pai) - (95) 99188-9900",
-                endereco: "Av. Major Williams, 780, São Pedro, Boa Vista - RR",
-                faltas: 0
-            },
-            {
-                id: 9,
-                numero: "09",
-                guerra: "FERREIRA",
-                nomeCompleto: "Larissa Ferreira Pires",
-                role: null,
-                isComando: false,
-                cnh: "AB",
-                cangaGuerra: "TEIXEIRA",
-                rh: "O+",
-                telefone: "(95) 98109-1009",
-                emergencia: "Valéria Ferreira (Mãe) - (95) 99199-0011",
-                endereco: "Rua Barão do Rio Branco, 620, Centro, Boa Vista - RR",
-                faltas: 1
-            },
-            {
-                id: 10,
-                numero: "10",
-                guerra: "TEIXEIRA",
-                nomeCompleto: "Diego Teixeira Prado",
-                role: null,
-                isComando: false,
-                cnh: "B",
-                cangaGuerra: "FERREIRA",
-                rh: "A+",
-                telefone: "(95) 98110-1010",
-                emergencia: "Amanda Prado (Esposa) - (95) 99200-1122",
-                endereco: "Rua Pedro Rodrigues, 115, Mecejana, Boa Vista - RR",
-                faltas: 0
-            },
-            {
-                id: 11,
-                numero: "11",
-                guerra: "VASCONCELOS",
-                nomeCompleto: "Gustavo Vasconcelos Rios",
-                role: null,
-                isComando: false,
-                cnh: "AC",
-                cangaGuerra: "COSTA",
-                rh: "O+",
-                telefone: "(95) 98111-1011",
-                emergencia: "Eduardo Rios (Irmão) - (95) 99211-2233",
-                endereco: "Rua José Magalhães, 510, Centro, Boa Vista - RR",
-                faltas: 3
-            },
-            {
-                id: 12,
-                numero: "12",
-                guerra: "COSTA",
-                nomeCompleto: "Mariana Costa Albuquerque",
-                role: null,
-                isComando: false,
-                cnh: "B",
-                cangaGuerra: "VASCONCELOS",
-                rh: "AB-",
-                telefone: "(95) 98112-1012",
-                emergencia: "Sérgio Albuquerque (Esposo) - (95) 99222-3344",
-                endereco: "Av. NS da Consolata, 900, Centro, Boa Vista - RR",
-                faltas: 0
-            }
+        // =========================================================================
+        // 1. COLE O LINK CSV DA SUA PLANILHA ENTRE AS ASPAS ABAIXO:
+        // =========================================================================
+        const GOOGLE_SHEET_CSV_URL = "COLE_AQUI_SEU_LINK_DO_GOOGLE_SHEETS";
+
+        // =========================================================================
+        // 2. CONFIGURAÇÃO DA CADEIA DE COMANDO (XERIFADO)
+        // (Você pode definir aqui pelo Nome de Guerra de quem é o Xerife, Sub, S1, S2, S3)
+        // =========================================================================
+        const COMANDO_DESIGNADO = {
+            "ALBERTI": "XERIFE",
+            "ALLANA": "SUB-XERIFE",
+            "ANA CARNEIRO": "S1",
+            "CAMELO": "S2",
+            "CARVALHO": "S3"
+        };
+
+        let alunos = [];
+        let currentFilter = 'todos';
+
+        // DADOS REAIS EXTRAÍDOS DA SUA PLANILHA (Exibidos enquanto o link é carregado)
+        const alunosIniciais = [
+            { id: 1, num: "01", nomeGuerra: "ALBERTI", nomeCompleto: "RAYANE DA SILVA ALBERTI", rh: "A+", canga: "ROZANA AZEVEDO", cpf: "013.871.472-00", nascimento: "31/07/1997", cnh: "AB", rg: "CIN", vunesp: "21350396", telefone: "(95) 99129-4079", emergTel: "(95) 99170-0310", emergParentesco: "Nathamy (irmã)", endereco: "Rua Aquário, 1360 - Cidade Satélite" },
+            { id: 2, num: "02", nomeGuerra: "ALLANA", nomeCompleto: "ALLANA LEAL RODRIGUES DOS SANTOS", rh: "O+", canga: "MENDES", cpf: "025.725.562-19", nascimento: "31/01/1996", cnh: "AB", rg: "3700666", vunesp: "20033591", telefone: "(95) 99164-7019", emergTel: "95991685343", emergParentesco: "ESPOSO JOSUEL", endereco: "Rua Iugoslávia, 870, Cauamé" },
+            { id: 3, num: "03", nomeGuerra: "ANA CARNEIRO", nomeCompleto: "ANA FLAVIA DA COSTA CARNEIRO", rh: "A+", canga: "CLEOCIMARA", cpf: "036.208.972-80", nascimento: "12/10/1998", cnh: "AB", rg: "3323269", vunesp: "19271425", telefone: "(95) 99128-1726", emergTel: "(95) 991394114", emergParentesco: "PAI", endereco: "RUA MESTRE ALBANO, 4063, CAMBARÁ" },
+            { id: 4, num: "04", nomeGuerra: "CAMELO", nomeCompleto: "LUIS HENRIK CAMELO SOUSA", rh: "O-", canga: "Camelo", cpf: "986.088.602-44", nascimento: "15/11/1995", cnh: "AB", rg: "372173-6", vunesp: "21466009", telefone: "(95) 98116-5813", emergTel: "95 991628200", emergParentesco: "Mulher", endereco: "Rua bolônia , 805 , centenário" },
+            { id: 5, num: "05", nomeGuerra: "CARVALHO", nomeCompleto: "RAISY CARVALHO SILVA", rh: "O+", canga: "Claudivânia", cpf: "04799293273", nascimento: "20/05/1999", cnh: "AB", rg: "8187159", vunesp: "19416300", telefone: "(95) 98109-8903", emergTel: "95981228831", emergParentesco: "AMIGA", endereco: "RUA Z DOIS, 315- Dr Silvio Leite" },
+            { id: 6, num: "06", nomeGuerra: "CLAUDIVANIA", nomeCompleto: "CLAUDIVANIA MORAIS ROCHA", rh: "O+", canga: "Carvalho", cpf: "019.102.762-60", nascimento: "21/12/1993", cnh: "AB", rg: "364785-4", vunesp: "20496060", telefone: "(95) 99133-4173", emergTel: "95991197284", emergParentesco: "Namorada", endereco: "Rua escorpião, 217, satelite" },
+            { id: 7, num: "07", nomeGuerra: "CLEOCIMARA", nomeCompleto: "CLEOCIMARA DE OLIVEIRA MESSIAS", rh: "O+", canga: "ANA CARNEIRO", cpf: "745448532-49", nascimento: "04/02/1983", cnh: "AB", rg: "CIN", vunesp: "19479891", telefone: "(95) 99124-0650", emergTel: "95 98419-2788", emergParentesco: "ESPOSO", endereco: "Rua Izídio Galdino Filho, 716, Jardim Carana" },
+            { id: 8, num: "08", nomeGuerra: "DAMASCENO", nomeCompleto: "DIEGO CUNHA DAMASCENO", rh: "O-", canga: "DAMASCENO", cpf: "032.778.482-21", nascimento: "02/09/1996", cnh: "B", rg: "26686902", vunesp: "20745419", telefone: "(92) 98426-0099", emergTel: "(92) 99131-2451", emergParentesco: "(Conjugue) Mayara", endereco: "Rua alcemir de Souza mota, 74, Bairro 31 d março" },
+            { id: 9, num: "09", nomeGuerra: "DANGLARIS", nomeCompleto: "DANGLARIS FERREIRA ALVES", rh: "O+", canga: "Freire", cpf: "683.466.032-15", nascimento: "01/05/1980", cnh: "AB", rg: "16608410", vunesp: "19321317", telefone: "(92) 99982-0810", emergTel: "92991666921", emergParentesco: "Daniela( irmã)", endereco: "rua Belarminio Fernandes Magalhães, 302 Asa Branca" },
+            { id: 10, num: "10", nomeGuerra: "DIEGO RAFAEL", nomeCompleto: "DIEGO RAFAEL CORREIA DE OLIVEIRA", rh: "A+", canga: "S BRITO", cpf: "090.896.944-98", nascimento: "09/05/1991", cnh: "AD", rg: "7952514", vunesp: "19432810", telefone: "(95) 99125-7158", emergTel: "(95) 981118989", emergParentesco: "ESPOSA", endereco: "Boa Vista - RR" },
+            { id: 11, num: "11", nomeGuerra: "EMANUEL", nomeCompleto: "PAULO EMANUEL BEZERRA NOGUEIRA", rh: "O+", canga: "Luziane", cpf: "03650204274", nascimento: "07/01/1998", cnh: "AB", rg: "4102690", vunesp: "19365080", telefone: "(95) 99115-0832", emergTel: "(92)991998399", emergParentesco: "-", endereco: "Boa Vista - RR" },
+            { id: 12, num: "12", nomeGuerra: "FILIPPE FERREIRA", nomeCompleto: "FILIPPE DOS SANTOS FERREIRA", rh: "O+", canga: "RODRIGO LIMA", cpf: "947.093.272-20", nascimento: "28/02/1988", cnh: "AB", rg: "CIN", vunesp: "19281412", telefone: "(95) 98115-1715", emergTel: "9598100-8108", emergParentesco: "PAI", endereco: "Boa Vista - RR" }
         ];
 
-        let activeFilter = 'all';
+        // Processa os dados brutos da planilha
+        function processRawData(rows) {
+            // 1. Encontra a linha de cabeçalho correta (ignora a linha laranja de título)
+            let headerIdx = -1;
+            for (let i = 0; i < Math.min(6, rows.length); i++) {
+                const lineStr = (rows[i] || []).join(' ').toUpperCase();
+                if (lineStr.includes('NOME DE GUERRA') || lineStr.includes('NOME COMPLETO')) {
+                    headerIdx = i;
+                    break;
+                }
+            }
 
-        // RENDERIZAR FAIXA DE COMANDO
+            if (headerIdx === -1) return [];
+
+            const headers = rows[headerIdx].map(h => 
+                (h || '').toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()
+            );
+
+            const dataRows = rows.slice(headerIdx + 1);
+            const parsed = [];
+
+            dataRows.forEach((row, idx) => {
+                if (!row || row.length === 0 || !row[0]) return;
+
+                const getVal = (keywords) => {
+                    for (let kw of keywords) {
+                        const colIdx = headers.findIndex(h => h.includes(kw));
+                        if (colIdx !== -1 && row[colIdx]) {
+                            return row[colIdx].toString().trim();
+                        }
+                    }
+                    return '';
+                };
+
+                const rawNum = getVal(['nº', 'num', 'no']);
+                const num = rawNum ? rawNum.padStart(2, '0') : String(idx + 1).padStart(2, '0');
+                const guerra = (getVal(['nome de guerra', 'guerra']) || `ALUNO ${num}`).toUpperCase();
+                const completo = getVal(['nome completo', 'completo']) || guerra;
+                
+                // Verifica comando (ou por coluna na planilha ou pelo objeto COMANDO_DESIGNADO)
+                const comandoPlanilha = getVal(['comando', 'xerife', 'funcao']);
+                const comando = (comandoPlanilha || COMANDO_DESIGNADO[guerra] || '').toUpperCase();
+                const isComando = comando.length > 0 && comando !== 'NÃO' && comando !== 'NAO';
+
+                const rh = (getVal(['rh', 'sangue']) || 'O+').toUpperCase();
+                const canga = getVal(['canga']) || '-';
+                const cpf = getVal(['cpf']) || '-';
+                const nascimento = getVal(['nasciment', 'nasc']) || '-';
+                const cnh = (getVal(['tipo de cnh', 'cnh']) || 'AB').toUpperCase();
+                const rg = getVal(['rg']) || '-';
+                const vunesp = getVal(['vunesp', 'matricula']) || '-';
+                const tel = getVal(['telefone', 'tel']) || '-';
+                const emergTel = getVal(['contato de emergencia', 'emergencia']) || '-';
+                const emergParentesco = getVal(['parentesco']) || '';
+                const endereco = getVal(['endereco', 'end']) || '-';
+
+                parsed.push({
+                    id: idx + 1,
+                    num,
+                    nomeGuerra: guerra,
+                    nomeCompleto: completo,
+                    isComando,
+                    badgeComando: isComando ? comando : '',
+                    funcao: isComando ? comando : 'Aluno do Pelotão',
+                    rh,
+                    canga,
+                    cpf,
+                    nascimento,
+                    cnh,
+                    rg,
+                    vunesp,
+                    telefone: tel,
+                    emergTel,
+                    emergParentesco,
+                    endereco
+                });
+            });
+
+            return parsed;
+        }
+
+        // Requisição para a planilha do Google
+        async function fetchSpreadsheetData() {
+            const syncDot = document.getElementById('sync-dot');
+            const syncText = document.getElementById('sync-text');
+
+            syncDot.className = "sync-dot";
+            syncText.innerText = "Sincronizando com a Turma Bravo...";
+
+            if (!GOOGLE_SHEET_CSV_URL || GOOGLE_SHEET_CSV_URL.includes("COLE_AQUI")) {
+                syncDot.className = "sync-dot";
+                syncText.innerText = "Demonstração (Cole o link da sua planilha no código)";
+                alunos = alunosIniciais.map(a => {
+                    const comando = COMANDO_DESIGNADO[a.nomeGuerra] || '';
+                    return {
+                        ...a,
+                        isComando: comando.length > 0,
+                        badgeComando: comando,
+                        funcao: comando || 'Aluno do Pelotão'
+                    };
+                });
+                renderCommand();
+                renderList(alunos);
+                return;
+            }
+
+            try {
+                // Adiciona timestamp para desativar cache do navegador
+                const timestampUrl = GOOGLE_SHEET_CSV_URL + (GOOGLE_SHEET_CSV_URL.includes('?') ? '&' : '?') + '_t=' + Date.now();
+                const res = await fetch(timestampUrl);
+                if (!res.ok) throw new Error("Erro de conexão");
+
+                const csvText = await res.text();
+                
+                Papa.parse(csvText, {
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        const parsed = processRawData(results.data);
+                        if (parsed && parsed.length > 0) {
+                            alunos = parsed;
+                            renderCommand();
+                            filterData();
+                            syncDot.className = "sync-dot online";
+                            syncText.innerText = `Sincronizado • ${alunos.length} alunos carregados (${new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})})`;
+                        } else {
+                            throw new Error("Nenhum registro encontrado");
+                        }
+                    }
+                });
+            } catch (err) {
+                console.error("Erro ao sincronizar:", err);
+                syncDot.className = "sync-dot error";
+                syncText.innerText = "Falha ao ler planilha. Usando cópia local.";
+                renderCommand();
+                renderList(alunos);
+            }
+        }
+
+        // ================= RENDERIZAR XERIFADO (COMANDO) =================
         function renderCommand() {
             const container = document.getElementById('command-strip');
             const comando = alunos.filter(a => a.isComando);
+            
+            if (comando.length === 0) {
+                container.style.display = 'none';
+                return;
+            } else {
+                container.style.display = 'flex';
+            }
 
             container.innerHTML = comando.map(a => `
-                <div class="command-item" onclick="showSheet(${a.id})">
-                    <span class="command-role-tag">${a.role}</span>
-                    <div class="command-name">${a.numero} • ${a.guerra}</div>
-                    <div class="command-canga">Canga: ${a.cangaGuerra}</div>
+                <div class="command-item" onclick="openModal(${a.id})">
+                    <span class="command-rank-tag">${a.badgeComando}</span>
+                    <div class="c-name">${a.num} • ${a.nomeGuerra}</div>
+                    <div class="c-role">Canga: ${a.canga}</div>
                 </div>
             `).join('');
         }
 
-        // RENDERIZAR LISTA DE ALUNOS
-        function renderStudents(list) {
+        // ================= RENDERIZAR LISTAGEM =================
+        function renderList(list) {
             const container = document.getElementById('students-list');
-            const countDisp = document.getElementById('count-display');
+            const countLabel = document.getElementById('student-total-label');
             
-            countDisp.innerText = `${list.length} alunos`;
+            countLabel.innerText = `${list.length} de ${alunos.length} Alunos`;
 
             if (list.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding: 2rem; color: var(--text-tertiary); font-size: 0.85rem;">Nenhum aluno localizado.</div>`;
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted); font-size: 0.85rem;">
+                        Nenhum aluno encontrado para os termos buscados.
+                    </div>
+                `;
                 return;
             }
 
             container.innerHTML = list.map(a => `
-                <div class="student-row" onclick="showSheet(${a.id})">
-                    <div class="student-num">${a.numero}</div>
-                    <div class="student-main">
-                        <div class="student-title-row">
-                            <span class="student-war-name">${a.guerra}</span>
-                            ${a.role ? `<span class="role-badge-mini">${a.role.split(' ')[0]}</span>` : ''}
+                <div class="student-entry" onclick="openModal(${a.id})">
+                    <div class="entry-left">
+                        <div class="num-badge">${a.num}</div>
+                        <div class="student-text">
+                            <div class="student-main-name">ALUNO ${a.nomeGuerra}</div>
+                            <div class="student-canga-line">Canga: ${a.canga}</div>
                         </div>
-                        <div class="student-sub">Canga: <strong>${a.cangaGuerra}</strong> • CNH ${a.cnh}</div>
                     </div>
-                    <div class="student-chips">
-                        <span class="chip chip-rh">${a.rh}</span>
-                        <span class="chip ${a.faltas === 0 ? 'chip-faltas-zero' : 'chip-faltas-warn'}">
-                            ${a.faltas === 0 ? '0 F' : a.faltas + ' F'}
-                        </span>
+                    <div class="entry-right">
+                        <span class="tag-pill rh">${a.rh}</span>
+                        <span class="tag-pill cnh">${a.cnh}</span>
+                        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg>
                     </div>
-                    <svg class="row-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </div>
             `).join('');
         }
 
-        // APLICAÇÃO DE FILTROS
-        function applyFilter(type, btn) {
-            activeFilter = type;
-            document.querySelectorAll('.filter-pills .filter-pill').forEach(p => p.classList.remove('active'));
-            btn.classList.add('active');
-            filterData();
-        }
-
+        // ================= FILTROS E BUSCA =================
         function filterData() {
             const query = document.getElementById('search-input').value.toLowerCase().trim();
-            
-            let filtered = alunos.filter(a => {
-                const matchQuery = a.guerra.toLowerCase().includes(query) ||
-                                   a.nomeCompleto.toLowerCase().includes(query) ||
-                                   a.cangaGuerra.toLowerCase().includes(query) ||
-                                   a.numero.includes(query);
-                
-                if (!matchQuery) return false;
+            const clearBtn = document.getElementById('clear-search-btn');
+            clearBtn.style.display = query.length > 0 ? 'block' : 'none';
 
-                if (activeFilter === 'comando') return a.isComando;
-                if (activeFilter === 'zero-faltas') return a.faltas === 0;
-                if (activeFilter === 'com-faltas') return a.faltas > 0;
+            let result = alunos.filter(a => {
+                const matchesQuery = 
+                    a.nomeGuerra.toLowerCase().includes(query) ||
+                    a.nomeCompleto.toLowerCase().includes(query) ||
+                    a.canga.toLowerCase().includes(query) ||
+                    a.num.includes(query) ||
+                    a.cnh.toLowerCase().includes(query);
+
+                if (!matchesQuery) return false;
+
+                if (currentFilter === 'comando') return a.isComando;
+                if (currentFilter === 'rh_o') return a.rh.includes('O');
+                if (currentFilter === 'rh_a') return a.rh.includes('A');
                 return true;
             });
 
-            renderStudents(filtered);
+            renderList(result);
         }
 
         document.getElementById('search-input').addEventListener('input', filterData);
 
-        // CONTROLE DO BOTTOM SHEET / MODAL
-        function showSheet(id) {
-            const a = alunos.find(x => x.id === id);
+        function clearSearch() {
+            const input = document.getElementById('search-input');
+            input.value = '';
+            filterData();
+            input.focus();
+        }
+
+        function applyFilter(type, btnElem) {
+            currentFilter = type;
+            document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+            btnElem.classList.add('active');
+            filterData();
+        }
+
+        // ================= DOSSIÊ / MODAL DO ALUNO =================
+        function openModal(id) {
+            const a = alunos.find(item => item.id === id);
             if (!a) return;
 
-            document.getElementById('p-num').innerText = a.numero;
-            document.getElementById('p-guerra').innerText = `${a.guerra} ${a.role ? '• ' + a.role : ''}`;
-            document.getElementById('p-nome').innerText = a.nomeCompleto;
-            document.getElementById('p-rh').innerText = a.rh;
-            document.getElementById('p-cnh').innerText = a.cnh;
+            document.getElementById('d-nome-guerra').innerText = `${a.num} • ALUNO ${a.nomeGuerra}`;
+            document.getElementById('d-funcao').innerText = a.isComando ? `${a.badgeComando} • TURMA BRAVO` : "TURMA BRAVO • CFP PCRR 2026";
+            document.getElementById('d-nome-completo').innerText = a.nomeCompleto;
             
-            // Link para o canga abrir direto
-            const cangaObj = alunos.find(c => c.guerra === a.cangaGuerra);
-            const cangaEl = document.getElementById('p-canga');
-            cangaEl.innerText = `${a.cangaGuerra} (Ver Dossiê)`;
-            cangaEl.onclick = () => { if (cangaObj) showSheet(cangaObj.id); };
+            // Canga clicável (abre o perfil do canga se encontrado)
+            const cangaEl = document.getElementById('d-canga');
+            cangaEl.innerText = `${a.canga} ↗`;
+            cangaEl.onclick = () => {
+                const cangaObj = alunos.find(x => 
+                    x.nomeGuerra.toLowerCase().includes(a.canga.toLowerCase()) || 
+                    a.canga.toLowerCase().includes(x.nomeGuerra.toLowerCase())
+                );
+                if (cangaObj) openModal(cangaObj.id);
+            };
 
-            document.getElementById('p-faltas').innerText = a.faltas === 0 ? '0 faltas (100% de frequência)' : `${a.faltas} falta(s) computada(s)`;
-            document.getElementById('p-tel').innerText = a.telefone;
-            document.getElementById('p-tel-link').href = `tel:${a.telefone.replace(/\D/g, '')}`;
+            document.getElementById('d-rh').innerText = a.rh;
+            document.getElementById('d-cnh').innerText = `Categoria ${a.cnh}`;
+            document.getElementById('d-nascimento').innerText = a.nascimento;
+            document.getElementById('d-cpf').innerText = a.cpf;
+            document.getElementById('d-rg').innerText = a.rg;
+            document.getElementById('d-vunesp').innerText = a.vunesp;
+            document.getElementById('d-telefone').innerText = a.telefone;
             
-            document.getElementById('p-emergencia').innerText = a.emergencia;
-            document.getElementById('p-endereco').innerText = a.endereco;
-            document.getElementById('p-maps-link').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(a.endereco)}`;
+            // Emergência com parentesco
+            const emergText = a.emergParentesco ? `${a.emergTel} (${a.emergParentesco})` : a.emergTel;
+            document.getElementById('d-emergencia').innerText = emergText;
+            document.getElementById('d-endereco').innerText = a.endereco;
 
-            document.getElementById('sheet-overlay').classList.add('open');
+            // Links para discagem direta
+            const cleanTel = a.telefone.replace(/\D/g, '');
+            document.getElementById('call-student-btn').href = cleanTel ? `tel:${cleanTel}` : '#';
+
+            const cleanEmerg = a.emergTel.replace(/\D/g, '');
+            const emergBtn = document.getElementById('call-emerg-btn');
+            emergBtn.href = cleanEmerg ? `tel:${cleanEmerg}` : '#';
+            document.getElementById('label-call-emerg').innerText = a.emergParentesco ? `Ligar Emergência (${a.emergParentesco})` : "Ligar para Emergência";
+
+            document.getElementById('modal-overlay').classList.add('open');
             document.body.style.overflow = 'hidden';
         }
 
-        function hideSheet() {
-            document.getElementById('sheet-overlay').classList.remove('open');
-            document.body.style.overflow = 'auto';
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('open');
+            document.body.style.overflow = '';
         }
 
-        function closeSheet(e) {
-            if (e.target.id === 'sheet-overlay') hideSheet();
+        function closeModalOnOverlay(e) {
+            if (e.target.id === 'modal-overlay') closeModal();
         }
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') hideSheet();
+            if (e.key === 'Escape') closeModal();
         });
 
-        // NAVEGAÇÃO DE ABAS
-        function navigate(tabKey) {
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        // ================= NAVEGAÇÃO DE ABAS =================
+        function navigate(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
 
-            const panel = document.getElementById(`tab-${tabKey}`);
-            if (panel) panel.classList.add('active');
+            const targetSection = document.getElementById(`tab-${tabId}`);
+            if (targetSection) targetSection.classList.add('active');
 
-            const activeBtn = Array.from(document.querySelectorAll('.nav-btn'))
-                .find(b => b.getAttribute('onclick').includes(tabKey));
+            const activeBtn = Array.from(document.querySelectorAll('.nav-tab'))
+                .find(btn => btn.getAttribute('onclick').includes(tabId));
             if (activeBtn) activeBtn.classList.add('active');
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: 'instant' });
         }
 
-        // INICIALIZAÇÃO
-        renderCommand();
-        renderStudents(alunos);
+        // CARREGA AO ABRIR
+        fetchSpreadsheetData();
     </script>
 </body>
 </html>
